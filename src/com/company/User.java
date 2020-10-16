@@ -1,11 +1,11 @@
 package com.company;
 
-public class Person {
+public abstract class User {
     private String userName;
     private String userEmail;
     private String userPhone;
 
-    public Person(String userName, String userEmail, String userPhone) {
+    public User(String userName, String userEmail, String userPhone) {
         this.userName = userName;
         this.userEmail = userEmail;
         this.userPhone = userPhone;
@@ -35,8 +35,6 @@ public class Person {
         this.userPhone = userPhone;
     }
 
-    @Override
-    public String toString() {
-        return "Name: "+userName+", Email: "+userEmail+", Phone: "+userPhone;
-    }
+    public abstract void request();
+
 }
