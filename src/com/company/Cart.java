@@ -12,6 +12,8 @@ public class Cart extends ArrayList<Book>{
         booklist.add(book);
     }
     public void removeBook(Book book){
+        if (!booklist.contains(book))
+            throw new IllegalArgumentException();
         for (Book book1 : booklist) {
             if (book.getBookID().equals(book1.getBookID()))
                 booklist.remove(book);
