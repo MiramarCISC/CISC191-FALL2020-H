@@ -54,10 +54,25 @@ public class Book{
     }
 
     public void setBookStock(int bookStock) {
+        if (bookStock<0)
+            throw new IllegalArgumentException("New stock cannot be negative");
         this.bookStock.set(bookStock);
     }
 
     public void checkOut(int bookStock){
+        if (bookStock>this.bookStock.get())
+            throw new IllegalArgumentException("Stock is less than requested number");
         this.bookStock.addAndGet(-1*bookStock);
+    }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "bookID='" + bookID + '\'' +
+                ", bookTitle='" + bookTitle + '\'' +
+                ", bookAuthor='" + bookAuthor + '\'' +
+                ", bookEdition='" + bookEdition + '\'' +
+                ", bookStock=" + bookStock +
+                '}';
     }
 }
