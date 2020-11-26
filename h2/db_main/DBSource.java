@@ -32,9 +32,6 @@ public class DBSource {
 
 
 
-
-    private final UUID generatedKey = null;
-
     private PreparedStatement queryCustomerInfo;
     private PreparedStatement insertIntoOrderItems;
     private PreparedStatement insertIntoCustomer;
