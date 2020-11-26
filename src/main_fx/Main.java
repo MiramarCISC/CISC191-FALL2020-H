@@ -25,12 +25,12 @@ public class Main extends Application {
 
 
     public static void main(String[] args) {
-        launch(args);
+        //launch(args);
         if (!DBSource.getConnection().open()) {
             System.out.println("Cannot connect to the database..");
             return;
-        } else
-        {
+        }
+        else {
             DBSource.getConnection().preload();
         }
         ExecutorService excecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());

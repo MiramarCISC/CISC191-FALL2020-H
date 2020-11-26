@@ -1,6 +1,7 @@
 package db_model;
 
 
+import java.util.Date;
 import java.util.HashMap;
 
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.function.Consumer;
 
 public class ShoppingCart {
     Map<Book, Integer> curCart = new HashMap<>();
+    Date orderedDate;
 
     private final int INITIAL_QUANTITY = 1;
 
@@ -25,15 +27,7 @@ public class ShoppingCart {
         return curCart;
     }
 
-    public StringBuilder toStringBookList(){
-        StringBuilder sb = new StringBuilder();
-        curCart.entrySet().forEach(new Consumer<Map.Entry<Book, Integer>>() {
-            @Override
-            public void accept(Map.Entry<Book, Integer> bookIntegerEntry) {
-                sb.append(bookIntegerEntry.getKey().getIsbn()).append("(").append(bookIntegerEntry.getValue()).append(")");
-            }
-        });
-        return sb;
-
+    public Date getOrderedDate() {
+        return orderedDate;
     }
 }
