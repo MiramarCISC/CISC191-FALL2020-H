@@ -5,8 +5,10 @@ import db_model.Customer;
 import db_model.ShoppingCart;
 
 import java.sql.*;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 
@@ -66,7 +68,6 @@ public class DBSource {
             insertIntoCustomer = con.prepareStatement(INSERT_CUSTOMER);
             insertIntoOrders = con.prepareStatement(INSERT_ORDERS);
             insertIntoOrderItems = con.prepareStatement(INSERT_ORDERITEMS);
-            //queryInsertOrders = con.prepareStatement("INSERT INTO ORDERS VALUES ( ?,?,?,? )");
             return true;
         } catch (SQLException | ClassNotFoundException e){
             System.out.println(e.getMessage());
@@ -104,9 +105,9 @@ public class DBSource {
             insertIntoCustomer.setString(4, customer.getcEmail());
             insertIntoCustomer.setString(5, customer.getcPhone());
             insertIntoCustomer.setString(6, customer.getcAddress());
-            int flag = insertIntoCustomer.executeUpdate();
-            if(flag != 1) {
-                throw new SQLException("Couldn't insert customer!");
+            int modifiedRows = insertIntoCustomer.executeUpdate();
+            if(modifiedRows != 1) {
+                throw new SQLException("Something wrong happened when inserting customer!");
             }
             return newcustomerId;
         } else {
@@ -116,38 +117,63 @@ public class DBSource {
     }
 
 
-    private void insertOrderItems(String orderId, Map<Book, Integer> booklist){
-        booklist.forEach((key, value) -> {
-            try {
-                insertIntoOrderItems.setString(1, orderId);
-                insertIntoOrderItems.setString(2, key.getIsbn());
-                insertIntoOrderItems.setInt(3, value);
-                insertIntoOrderItems.setDouble(4, key.getPrice());
-                insertIntoOrderItems.executeUpdate();
-            } catch (SQLException e) {
-                System.out.println("Cannot insert item into ORDERITEMS" + e.getMessage());
+    //TESTING THIS IF POSSIBLE !!!!!!!!!!!!!!!
+
+    private void insertOrderItems(String orderId, Map<Book, Integer> bookList) throws SQLException{
+        Iterator<Map.Entry<Book,Integer>> itr = bookList.entrySet().iterator();
+        int modifiedRows;
+        Map.Entry<Book,Integer> bookEntry;
+        while (itr.hasNext()){
+            bookEntry = itr.next();
+
+            insertIntoOrderItems.setString(1, orderId);
+            insertIntoOrderItems.setString(2, bookEntry.getKey().getIsbn());
+            insertIntoOrderItems.setInt(3, bookEntry.getValue());
+            insertIntoOrderItems.setDouble(4, bookEntry.getKey().getPrice());
+            modifiedRows = insertIntoOrderItems.executeUpdate();
+            if(modifiedRows != 1) {
+                throw new SQLException("Something wrong happened when inserting customer!");
             }
-
-        });
-
+        }
 
     }
 
     //Start from here
-    private void insertOrders(Customer customer, ShoppingCart cart) throws SQLException {
+    private void insertOrders(Customer customer, ShoppingCart cart){
 
 
         //saving order history
-        String neworderId = generateRandomID();
-        insertIntoOrders.setString(1, neworderId);
-        insertIntoOrders.setString(2, insertCustomer(customer));
-        insertIntoOrders.setDate(3, (Date) cart.getOrderedDate());
-        int flag = insertIntoOrders.executeUpdate();
-        if(flag != 1) {
-            throw new SQLException("Couldn't insert new order!");
+        try {
+            con.setAutoCommit(false);
+            String neworderId = generateRandomID();
+            insertIntoOrders.setString(1, neworderId);
+            insertIntoOrders.setString(2, insertCustomer(customer));
+            insertIntoOrders.setDate(3, (Date) cart.getOrderedDate());
+            int modifiedRows = insertIntoOrders.executeUpdate();
+            if (modifiedRows == 1) {
+                insertOrderItems(neworderId, cart.getCurCart());
+                con.commit();
+            } else{
+                throw new SQLException("Something wrong happened when inserting order!");
+            }
+            //adding items into OrderItems
+
+        } catch (SQLException e){
+            System.out.println("Insert into ORDERS failed!");
+            try{
+                System.out.println("Rolling back... " + e.getMessage());
+                con.rollback();
+            } catch (SQLException e2){
+                System.out.println("Couldn't roll back, RIP "+ e2.getMessage());
+            }
+        } finally {
+            try{
+                System.out.println("Resetting auto-commit...");
+                con.setAutoCommit(true);
+            } catch (SQLException e3){
+                System.out.println("Couldn't reset auto-commit ! " + e3.getMessage());
+            }
         }
-        //adding items into OrderItems
-        insertOrderItems(neworderId, cart.getCurCart());
 
 
     }
