@@ -1,7 +1,7 @@
 
 DROP TABLE IF EXISTS BOOKS;
 CREATE TABLE BOOKS (
-                               customerid INT NOT NULL AUTO_INCREMENT,
+                               id INT NOT NULL AUTO_INCREMENT,
                                title VARCHAR(150) NOT NULL,
                                isbn VARCHAR(50),
                                price DOUBLE,
@@ -90,20 +90,19 @@ CREATE TABLE ORDERS (
                             ON UPDATE NO ACTION
                             ON DELETE NO ACTION
 );
-DROP TABLE IF EXISTS ORDERITEMS;
-CREATE TABLE ORDERITEMS (
-    ID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    orderid VARCHAR(50) NOT NULL,
-    CONSTRAINT fk_order_id
-        FOREIGN KEY (orderid) REFERENCES ORDERS(orderid)
-            ON UPDATE NO ACTION
-            ON DELETE NO ACTION,
-    isbn VARCHAR(50) NOT NULL,
-    CONSTRAINT fk_book_isbn
-        FOREIGN KEY (isbn) REFERENCES BOOKS(isbn)
-            ON UPDATE NO ACTION
-            ON DELETE NO ACTION,
-    quantity INT,
-    CHECK (quantity >= 1),
-    PRICE DOUBLE
+DROP TABLE IF EXISTS ORDEREDITEMS;
+CREATE TABLE ORDEREDITEMS (
+                        ID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+                        orderid VARCHAR(50) NOT NULL,
+                        CONSTRAINT fk_order_id
+                            FOREIGN KEY (orderid) REFERENCES ORDERS(orderid)
+                                ON UPDATE NO ACTION
+                                ON DELETE NO ACTION,
+                        isbn VARCHAR(50) NOT NULL,
+                        CONSTRAINT fk_book_isbn
+                            FOREIGN KEY (isbn) REFERENCES BOOKS(isbn)
+                                ON UPDATE NO ACTION
+                                ON DELETE NO ACTION,
+                        quantity INT,
+                        CHECK (quantity >= 1),
 );

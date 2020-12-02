@@ -4,9 +4,18 @@ public class Customer {
     private String cId;
     private String cName;
     private int cAge;
+    private String cEmail;
     private String cPhone;
     private String cAddress;
-    private String cEmail;
+
+    public Customer(String cId, String cName, int cAge, String cEmail, String cPhone, String cAddress) {
+        this.cId = cId;
+        this.cName = cName;
+        this.cAge = cAge;
+        this.cEmail = cEmail;
+        this.cPhone = cPhone;
+        this.cAddress = cAddress;
+    }
 
     public String getcId() {
         return cId;

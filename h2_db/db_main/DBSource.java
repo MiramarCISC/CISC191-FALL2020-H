@@ -5,9 +5,7 @@ import db_model.Customer;
 import db_model.ShoppingCart;
 
 import java.sql.*;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -15,37 +13,41 @@ import java.util.function.Consumer;
 public class DBSource {
     public static final String URL = "jdbc:h2:file:./BooksDB";
 //    public static final String BOOKS_TABLE = "BOOKS";
-//    public static final String BOOKS_COLUMN_ISBN = "isbn";
-//    public static final String BOOKS_COLUMN_STOCK ="stock";
-//    public static final String ORDERS_COLUMN_CUSTOMERID ="customerid";
-//    public static final String ORDERS_COLUMN_ORDERID = "orderid";
-//    public static final String ORDERS_COLUMN_DATE ="orderdate";
+    public static final String BOOKS_COLUMN_ISBN = "isbn";
+    public static final String BOOKS_COLUMN_TITLE ="title";
+    public static final String BOOKS_COLUMN_PUBLSIHEDDATE = "publishedDate";
+    public static final String BOOKS_COLUMN_AUTHOR = "author";
+    public static final String BOOKS_COLUMN_PRICE = "price";
+    public static final String BOOKS_COLUMN_CATEGORY = "category";
+    public static final String ORDERS_COLUMN_CUSTOMERID ="customerid";
+    public static final String ORDERS_COLUMN_ORDERID = "orderid";
+    public static final String ORDERS_COLUMN_DATE ="orderdate";
     public static final String CUSTOMER_COLUMN_CUSTOMERID = "customerid";
     public static final String CUSTOMER_COLUMN_NAME ="name";
     public static final String CUSTOMER_COLUMN_AGE = "age";
     public static final String CUSTOMER_COLUMN_EMAIL = "email";
     public static final String CUSTOMER_COLUMN_PHONE = "phone";
     public static final String CUSTOMER_COLUMN_ADDRESS = "address";
-    public static final String ORDERITEMS_COLUMN_ORDERID = "orderid";
-    public static final String ORDERITEMS_COLUMN_BOOKISBN = "isbn";
-    public static final String ORDERITEMS_COLUMN_QUANTITY = "quantity";
-    public static final String ORDERITEMS_COLUMN_PRICE = "price";
-
+    public static final String ORDEREDITEMS_COLUMN_ORDERID = "orderid";
+    public static final String ORDEREDITEMS_COLUMN_BOOKISBN = "isbn";
+    public static final String ORDEREDITEMS_COLUMN_QUANTITY = "quantity";
 
 
 
     private PreparedStatement queryCustomerInfo;
-    private PreparedStatement insertIntoOrderItems;
+    private PreparedStatement insertIntoOrderedItems;
     private PreparedStatement insertIntoCustomer;
     private PreparedStatement insertIntoOrders;
-
+    private Statement queryBooksInfo;
 
     public static final String QUERY_CUSTOMER_INFO = "SELECT * FROM CUSTOMER WHERE "+ CUSTOMER_COLUMN_CUSTOMERID+" = ?";
     public static final String INSERT_CUSTOMER = "INSERT INTO CUSTOMER VALUES (?,?,?,?,?,?)";
-
+    public static final String QUERY_BOOKS_INFO = "SELECT * FROM BOOKS";
     public static final String INSERT_ORDERS = "INSERT INTO ORDERS VALUES (?,?,?)";
-    public static final String INSERT_ORDERITEMS = "INSERT INTO ORDERITEMS("+ ORDERITEMS_COLUMN_ORDERID+", "+ ORDERITEMS_COLUMN_BOOKISBN+
-                                                    ", "+ORDERITEMS_COLUMN_QUANTITY+", "+ORDERITEMS_COLUMN_PRICE+  ") VALUES (?,?,?,?)";
+    public static final String INSERT_ORDEREDITEMS = "INSERT INTO ORDEREDITEMS("+ ORDEREDITEMS_COLUMN_ORDERID+", "
+                                                                                + ORDEREDITEMS_COLUMN_BOOKISBN+ ", "
+                                                                                + ORDEREDITEMS_COLUMN_QUANTITY+") "
+                                                                                + "VALUES (?,?,?)";
 
 
 
@@ -55,30 +57,47 @@ public class DBSource {
 
 
     private Connection con = null;
+    private List<Book> bookData = new ArrayList<>();
     private static DBSource newCon = new DBSource();
     public static DBSource getConnection() {
         return newCon;
     }
+     private DBSource(){
+
+     }
 
     public boolean open() {
         try {
             Class.forName("org.h2.Driver");
             con = DriverManager.getConnection(URL, "sa", "");
+            preload();
             queryCustomerInfo = con.prepareStatement(QUERY_CUSTOMER_INFO);
             insertIntoCustomer = con.prepareStatement(INSERT_CUSTOMER);
             insertIntoOrders = con.prepareStatement(INSERT_ORDERS);
-            insertIntoOrderItems = con.prepareStatement(INSERT_ORDERITEMS);
+            insertIntoOrderedItems = con.prepareStatement(INSERT_ORDEREDITEMS);
+            queryBooksInfo = con.createStatement();
             return true;
         } catch (SQLException | ClassNotFoundException e){
             System.out.println(e.getMessage());
             return false;
         }
     }
-    public void preload(){
+
+    public ResultSet getBooksInfo() throws SQLException {
+        return this.queryBooksInfo.executeQuery(QUERY_BOOKS_INFO);
+    }
+    private void preload(){
         Statement stm = null;
         try {
             stm = con.createStatement();
             stm.executeUpdate("RUNSCRIPT FROM './Resources/preload.sql'");
+            ResultSet rs = stm.executeQuery(QUERY_BOOKS_INFO);
+            while (rs.next()){
+                this.bookData.add(new Book(rs.getString(BOOKS_COLUMN_TITLE),rs.getString(BOOKS_COLUMN_ISBN),
+                                            rs.getDouble(BOOKS_COLUMN_PRICE), rs.getString(BOOKS_COLUMN_PUBLSIHEDDATE),
+                                            rs.getString(BOOKS_COLUMN_AUTHOR), rs.getString(BOOKS_COLUMN_CATEGORY)));
+            }
+
         }
         catch (SQLException e){
             System.out.println("Cannot preload the databse.. " + e.getMessage());
@@ -98,7 +117,7 @@ public class DBSource {
         queryCustomerInfo.setString(1, customer.getcId());
         ResultSet rs = queryCustomerInfo.executeQuery();
         if(!rs.next()){
-            String newcustomerId = generateRandomID();
+            String newcustomerId = customer.getcId();
             insertIntoCustomer.setString(1, newcustomerId);
             insertIntoCustomer.setString(2, customer.getcName());
             insertIntoCustomer.setInt(3, customer.getcAge());
@@ -119,18 +138,18 @@ public class DBSource {
 
     //TESTING THIS IF POSSIBLE !!!!!!!!!!!!!!!
 
-    private void insertOrderItems(String orderId, Map<Book, Integer> bookList) throws SQLException{
-        Iterator<Map.Entry<Book,Integer>> itr = bookList.entrySet().iterator();
+    private void insertOrderedItems(String orderId, List<Book> bookList) throws SQLException{
+        Iterator<Book> itr = bookList.iterator();
         int modifiedRows;
-        Map.Entry<Book,Integer> bookEntry;
+        Book bookEntry;
         while (itr.hasNext()){
             bookEntry = itr.next();
 
-            insertIntoOrderItems.setString(1, orderId);
-            insertIntoOrderItems.setString(2, bookEntry.getKey().getIsbn());
-            insertIntoOrderItems.setInt(3, bookEntry.getValue());
-            insertIntoOrderItems.setDouble(4, bookEntry.getKey().getPrice());
-            modifiedRows = insertIntoOrderItems.executeUpdate();
+            insertIntoOrderedItems.setString(1, orderId);
+            insertIntoOrderedItems.setString(2, bookEntry.getIsbn());
+            insertIntoOrderedItems.setInt(3, bookEntry.getQuantity());
+
+            modifiedRows = insertIntoOrderedItems.executeUpdate();
             if(modifiedRows != 1) {
                 throw new SQLException("Something wrong happened when inserting customer!");
             }
@@ -139,7 +158,7 @@ public class DBSource {
     }
 
     //Start from here
-    private void insertOrders(Customer customer, ShoppingCart cart){
+    public void insertOrders(Customer customer, ShoppingCart cart){
 
 
         //saving order history
@@ -148,15 +167,14 @@ public class DBSource {
             String neworderId = generateRandomID();
             insertIntoOrders.setString(1, neworderId);
             insertIntoOrders.setString(2, insertCustomer(customer));
-            insertIntoOrders.setDate(3, (Date) cart.getOrderedDate());
+            insertIntoOrders.setObject(3, cart.getOrderedDate());
             int modifiedRows = insertIntoOrders.executeUpdate();
             if (modifiedRows == 1) {
-                insertOrderItems(neworderId, cart.getCurCart());
+                insertOrderedItems(neworderId, cart.getCurCart());
                 con.commit();
             } else{
                 throw new SQLException("Something wrong happened when inserting order!");
             }
-            //adding items into OrderItems
 
         } catch (SQLException e){
             System.out.println("Insert into ORDERS failed!");
@@ -187,9 +205,11 @@ public class DBSource {
         }
     }
 
-    public String generateRandomID(){
+    private String generateRandomID(){
         return UUID.randomUUID().toString().split("-")[4];
     }
 
-
+    public List<Book> getBookData() {
+        return this.bookData;
+    }
 }

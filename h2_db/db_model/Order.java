@@ -13,8 +13,8 @@ public class Order {
         return curCustomer;
     }
     public Double getTotalPrice(){
-        return cart.getCurCart().entrySet().stream()
-                .map(book -> book.getKey().getPrice() * Double.valueOf(book.getValue()))
+        return cart.getCurCart().stream()
+                .map(book -> book.getPrice() * (double) book.getQuantity())
                 .reduce(0.0, Double::sum);
     }
 }
