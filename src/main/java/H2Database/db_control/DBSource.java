@@ -74,8 +74,12 @@ public class DBSource {
 
     public void preload() {
         String preloadPath = System.getProperty("user.dir") + "/src/main/resources/preload.sql";
-        try (Connection connection = DBSource.open();
-             Statement statement = connection.createStatement()) {
+        try (Connection connection = DBSource.open()) {
+            if (connection==null) {
+                logger.warning("Connection in used!!!");
+                System.exit(1);
+            }
+            Statement statement = connection.createStatement();
             logger.info("Connected");
             statement.executeUpdate("RUNSCRIPT FROM '" + preloadPath + "'");
             logger.info("Built");
