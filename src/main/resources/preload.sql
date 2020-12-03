@@ -67,8 +67,8 @@ DROP TABLE IF EXISTS CISC191.customers;
 CREATE TABLE CISC191.customers (
   customer_id VARCHAR(70) NOT NULL,
   name VARCHAR(200) NOT NULL,
-  age INT NULL,
-  email VARCHAR(150),
+  age INT NOT NULL,
+  email VARCHAR(150) UNIQUE,
   phone VARCHAR(150),
   address VARCHAR(150),
   PRIMARY KEY (customer_id));
@@ -222,9 +222,10 @@ INSERT INTO CISC191.customers VALUES ('e67f35a34','Yesenia Higgins',35,'yeseniah
 DROP TABLE IF EXISTS CISC191.orders;
 CREATE TABLE cisc191.orders (
   order_id VARCHAR(15) NOT NULL PRIMARY KEY,
-  customer_id VARCHAR(45),
-  date_ordered DATE NULL,
-  FOREIGN KEY (customer_id) REFERENCES CISC191.customers(customer_id) ON UPDATE NO ACTION  ON DELETE NO ACTION);
+  customer_id VARCHAR(45) NOT NULL,
+  date_ordered DATE,
+  FOREIGN KEY (customer_id) REFERENCES CISC191.customers(customer_id) ON UPDATE NO ACTION  ON DELETE NO ACTION
+  );
 
 INSERT INTO CISC191.orders VALUES ('ae3b57d442b0','210393ba0','2020-09-04');
 INSERT INTO CISC191.orders VALUES ('1111a07c77b8','7691a256f','2019-08-10');
