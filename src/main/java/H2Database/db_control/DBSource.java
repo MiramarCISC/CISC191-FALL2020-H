@@ -15,18 +15,15 @@ import java.util.logging.Logger;
 public class DBSource {
 //    public static final String CUSTOMER_COLUMN_NAME = "name";
 //    public static final String CUSTOMER_COLUMN_AGE = "age";
-//    public static final String CUSTOMER_COLUMN_EMAIL = "email";
-//    public static final String CUSTOMER_COLUMN_PHONE = "phone";
 //    public static final String CUSTOMER_COLUMN_ADDRESS = "address";
 //    public static final String ORDERITEMS_COLUMN_ORDERID = "order_id";
 //    public static final String ORDERITEMS_COLUMN_BOOKISBN = "isbn";
 //    public static final String ORDERITEMS_COLUMN_QUANTITY = "quantity";
 //    public static final String ORDERITEMS_COLUMN_PRICE = "price";
+//    public static final String CUSTOMER_COLUMN_EMAIL = "email";
+//    public static final String CUSTOMER_COLUMN_PHONE = "phone";
 
     public static final String URL = "jdbc:h2:~/test;";
-    private final static String USERNAME = "sa";
-    private final static String PASSWORD = "";
-
     public static final String CUSTOMER_COLUMN_CUSTOMERID = "customer_id";
     public static final String BOOK_COLUMN_STOCK = "stock";
     public static final String BOOK_COLUMN_ISBN = "isbn";
@@ -37,7 +34,19 @@ public class DBSource {
     public static final String INSERT_ORDERS = "INSERT INTO CISC191.ORDERS VALUES (?,?,?)";
     public static final String INSERT_ORDERITEMS = "INSERT INTO CISC191.ORDER_ITEMS VALUES (?,?,?)";
     public static final String UPDATE_BOOKS_STOCK = "UPDATE CISC191.BOOKS SET " + BOOK_COLUMN_STOCK + " = ? WHERE " + BOOK_COLUMN_ISBN + " = ?";
+    public static final String QUERY_CUSTOMER_ORDER =
+                                                    "SELECT \n" +
+                                                    "    o.order_id,\n" +
+                                                    "    date_ordered,\n" +
+                                                    "    SUM(quantity*price) as total\n" +
+                                                    "FROM CISC191.orders as o\n" +
+                                                    "JOIN CISC191.order_items as oi ON o.order_id = oi.order_id\n" +
+                                                    "JOIN CISC191.books ON oi.isbn = books.isbn\n" +
+                                                    "WHERE customer_id = ? \n" +
+                                                    "GROUP BY o.order_id;";
 
+    private final static String USERNAME = "sa";
+    private final static String PASSWORD = "";
     private final static Logger logger = Logging.getLogger();
 
     private PreparedStatement queryInfo;
@@ -75,7 +84,7 @@ public class DBSource {
     public void preload() {
         String preloadPath = System.getProperty("user.dir") + "/src/main/resources/preload.sql";
         try (Connection connection = DBSource.open()) {
-            if (connection==null) {
+            if (connection == null) {
                 logger.warning("Connection in used!!!");
                 System.exit(1);
             }
@@ -89,30 +98,35 @@ public class DBSource {
         }
     }
 
-    //inserting a new customer and returning the new id
-    private String insertCustomer(Customer customer, Connection connection) throws SQLException {
+    public ResultSet getPurchaseHistory(String customerID) throws SQLException {
+        ResultSet rs = queryINFO(QUERY_CUSTOMER_ORDER,customerID);
+        return rs;
+    }
 
+    public String validateCustomer(String customerID,Connection connection) throws SQLException {
+        insertIntoCustomer = connection.prepareStatement(INSERT_CUSTOMER);
+        String returnValue;
+        ResultSet rs = queryINFO(QUERY_CUSTOMER_INFO, customerID);
 
+        if (!rs.next()) returnValue = null;
+        else returnValue = rs.getString(CUSTOMER_COLUMN_CUSTOMERID);
+        return returnValue;
+    }
+
+    public String createCustomer(String name, int age, String phone, String address, String email, Connection connection) throws SQLException {
         insertIntoCustomer = connection.prepareStatement(INSERT_CUSTOMER);
         int modifiedRows;
-        String returnValue;
-        ResultSet rs = queryINFO(QUERY_CUSTOMER_INFO, customer.getcId());
-
-        if (!rs.next()) {
-            String newcustomerId = generateRandomID();
-            insertIntoCustomer.setString(1, newcustomerId);
-            insertIntoCustomer.setString(2, customer.getcName());
-            insertIntoCustomer.setInt(3, customer.getcAge());
-            insertIntoCustomer.setString(4, customer.getcEmail());
-            insertIntoCustomer.setString(5, customer.getcPhone());
-            insertIntoCustomer.setString(6, customer.getcAddress());
-            modifiedRows = insertIntoCustomer.executeUpdate();
-            if (modifiedRows != 1)
-                throw new SQLException("Insert Into CUSTOMERS Failed!!!");
-            returnValue = newcustomerId;
-        } else
-            returnValue = rs.getString(CUSTOMER_COLUMN_CUSTOMERID);
-        return returnValue;
+        String newcustomerId = generateRandomID();
+        insertIntoCustomer.setString(1, newcustomerId);
+        insertIntoCustomer.setString(2, name);
+        insertIntoCustomer.setInt(3, age);
+        insertIntoCustomer.setString(4, email);
+        insertIntoCustomer.setString(5, phone);
+        insertIntoCustomer.setString(6, address);
+        modifiedRows = insertIntoCustomer.executeUpdate();
+        if (modifiedRows != 1)
+            throw new SQLException("Insert Into CUSTOMERS Failed!!!");
+        return newcustomerId;
     }
 
     private void insertOrderItems(String orderId, Map<Book, Integer> bookList, Connection connection) throws SQLException {
@@ -143,16 +157,16 @@ public class DBSource {
 
     }
 
-    public void insertOrders(Customer customer, ShoppingCart cart) {
+    public void insertOrders(String customerID, ShoppingCart cart) {
         Connection connection = DBSource.open();
 
         try {
             insertIntoOrders = connection.prepareStatement(INSERT_ORDERS);
             connection.setAutoCommit(false);
 
-            String newOrderId = generateRandomID()+"OD";
+            String newOrderId = generateRandomID();
             insertIntoOrders.setString(1, newOrderId);
-            insertIntoOrders.setString(2, insertCustomer(customer, connection));
+            insertIntoOrders.setString(2, validateCustomer(customerID,connection));
             insertIntoOrders.setDate(3, (Date) cart.getOrderedDate());
 
             int modifiedRows = insertIntoOrders.executeUpdate();
@@ -162,7 +176,7 @@ public class DBSource {
             } else {
                 throw new SQLException("Insert Order Failed!!!");
             }
-            logger.info("Added Order: "+newOrderId);
+            logger.info("Added Order: " + newOrderId);
             //adding items into OrderItems
 
         } catch (SQLException e) {
@@ -185,6 +199,7 @@ public class DBSource {
 
 
     }
+
     public void updateStock(String isbn, int requestedStock, Connection connection) throws SQLException {
         ResultSet resultSet = queryINFO(QUERY_BOOKS_INFO, isbn);
         resultSet.next();
@@ -217,6 +232,5 @@ public class DBSource {
     private String generateRandomID() {
         return UUID.randomUUID().toString().split("-")[4];
     }
-
 
 }
