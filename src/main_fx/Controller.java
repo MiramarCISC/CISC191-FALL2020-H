@@ -4,6 +4,8 @@ package main_fx;
 import db_main.DBSource;
 import db_model.Book;
 import db_model.ShoppingCart;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -20,6 +22,7 @@ import java.util.Random;
 public class Controller{
 
 
+    public TableColumn<Book, String> bColumn;
 
 
     public void initialize(){
@@ -32,20 +35,37 @@ public class Controller{
         quantity_column.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         author_column.setCellValueFactory(new PropertyValueFactory<>("author"));
         category_column.setCellValueFactory(new PropertyValueFactory<>("category"));
-
-        index_column.setCellFactory(new Callback<>() {
+        bColumn.setCellFactory(bookButtonTableColumn -> new TableCell<>() {
+            final Button btn = new Button("Just Do It");
             @Override
-            public TableCell<Book, Integer> call(TableColumn<Book, Integer> bookIntegerTableColumn) {
-                return new TableCell<>() {
-                    @Override
-                    protected void updateItem(Integer item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item == null && empty) {
-                            setText("");
-                        } else
-                            setText(this.getTableRow().getIndex() + 1 + "");
-                    }
-                };
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if(empty){
+                    setText(null);
+                    setGraphic(null);
+                } else
+                    setGraphic(btn);
+                    btn.setOnAction(event -> {
+                        bookData.get(this.getTableRow().getIndex()).increaseQuantity();
+//                        if(bookData.get(this.getTableRow().getIndex()).getQuantity()==10){
+//                            bookData.remove(this.getTableRow().getIndex());
+//                        }
+
+                    });
+
+            }
+        });
+
+        index_column.setCellFactory(indexColumn -> new TableCell<>() {
+            @Override
+            protected void updateItem(Integer item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null && empty){
+                    setText(null);
+                    setGraphic(null);
+                } else
+                    setText(this.getTableRow().getIndex() + 1 + "");
+
             }
         });
     }

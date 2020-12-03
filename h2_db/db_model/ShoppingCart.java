@@ -37,9 +37,9 @@ public class ShoppingCart {
     public void removefromCart(Book item){
         curCart.remove(item);
     }
-    public void updateCart(Book item, int newQuantity){
-        item.setQuantity(newQuantity);
-    }
+//    public void updateCart(Book item, int newQuantity){
+//        item.setQuantity(newQuantity);
+//    }
 
     public List<Book> getCurCart() {
         return curCart;
