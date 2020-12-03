@@ -26,6 +26,7 @@
                   <Font name="System Bold" size="30.0" />
                </font>
             </Label>
+            <FontAwesomeIcon fx:id="close" fill="WHITE" glyphName="CLOSE" layoutX="726.0" layoutY="30.0" onMouseClicked="#handleClose" size="20" />
          </children>
       </Pane>
       <VBox layoutX="-1.0" prefHeight="572.0" prefWidth="253.0" style="-fx-background-color: #32373B;" stylesheets="@style.css" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="-1.0" AnchorPane.topAnchor="-1.0">

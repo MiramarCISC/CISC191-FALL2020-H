@@ -1,18 +1,27 @@
 package FX.mainFX;
 
 import FX.fx_model.PurchaseHistory;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+
+import java.io.IOException;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 import H2Database.db_control.DBSource;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 public class MainController implements Initializable {
 
@@ -45,6 +54,9 @@ public class MainController implements Initializable {
 
     @FXML
     private TableColumn<PurchaseHistory, String> totalColumn;
+
+    @FXML
+    private FontAwesomeIcon close;
 
     private ObservableList observableList = FXCollections.observableArrayList();
     private DBSource dbSource;
@@ -90,5 +102,28 @@ public class MainController implements Initializable {
 
         this.tableView.setItems(null);
         this.tableView.setItems(observableList);
+    }
+    public static void close(){
+        try {
+            Stage closeStage = new Stage();
+            FXMLLoader loader = new FXMLLoader(MainFX.class.getResource("/close.fxml"));
+            Pane root = loader.load();
+            Scene scene = new Scene(root);
+
+            closeStage.setTitle("Exit");
+            closeStage.initModality(Modality.APPLICATION_MODAL);
+            closeStage.setScene(scene);
+            closeStage.setResizable(false);
+            closeStage.showAndWait();
+
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+    }
+
+    @FXML
+    void handleClose(MouseEvent event) {
+        if (event.getSource()==close)
+            close();
     }
 }
