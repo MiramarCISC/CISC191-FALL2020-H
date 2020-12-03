@@ -26,6 +26,7 @@ public class Controller{
 
 
     public void initialize(){
+
         this.bookData = FXCollections.observableArrayList(cartccurrent.getCurCart());
         tbview.setItems(this.bookData);
         tbview.setPlaceholder(new Label("Cart is empty!"));
