@@ -1,6 +1,7 @@
 package FX.mainFX;
 
 import FX.fx_model.PurchaseHistory;
+import H2Database.db_control.DBSource;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -8,20 +9,22 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
-import H2Database.db_control.DBSource;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 
 public class MainController implements Initializable {
 
@@ -58,6 +61,15 @@ public class MainController implements Initializable {
     @FXML
     private FontAwesomeIcon close;
 
+    @FXML
+    private VBox vScroll;
+
+    @FXML
+    private GridPane checkOutPane;
+
+    @FXML
+    private GridPane purchasesPane;
+
     private ObservableList observableList = FXCollections.observableArrayList();
     private DBSource dbSource;
 
@@ -65,18 +77,22 @@ public class MainController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         dbSource = DBSource.getConnection();
         dbSource.preload();
+        buildCustomList();
     }
 
+    @FXML
     public void changeSection(ActionEvent event) throws SQLException {
-        if(event.getSource()==checkout) {
+        if (event.getSource() == checkout) {
             mainText.setText("Checkout");
-        }
-        else if(event.getSource()==purchases) {
+            checkOutPane.toFront();
+        } else if (event.getSource() == purchases) {
             mainText.setText("History");
+            purchasesPane.toFront();
         }
     }
 
-    public void searchHistoryButton(ActionEvent event){
+    @FXML
+    public void searchHistoryButton(ActionEvent event) {
         tableView.getItems().clear();
         String keyID = textHistory.getText();
         ResultSet resultSet;
@@ -89,7 +105,7 @@ public class MainController implements Initializable {
                         resultSet.getDouble("total")));
             }
 
-            if(observableList.size()==0)
+            if (observableList.size() == 0)
                 labelHistory.setText("No Matching ID");
 
         } catch (SQLException sqlException) {
@@ -103,7 +119,15 @@ public class MainController implements Initializable {
         this.tableView.setItems(null);
         this.tableView.setItems(observableList);
     }
-    public static void close(){
+
+    @FXML
+    void handleClose(MouseEvent event) {
+        if (event.getSource() == close)
+            close();
+    }
+
+
+    private static void close() {
         try {
             Stage closeStage = new Stage();
             FXMLLoader loader = new FXMLLoader(MainFX.class.getResource("/close.fxml"));
@@ -121,9 +145,15 @@ public class MainController implements Initializable {
         }
     }
 
-    @FXML
-    void handleClose(MouseEvent event) {
-        if (event.getSource()==close)
-            close();
+    private void buildCustomList() {
+        Node node;
+        for (int i = 0; i < 5; i++) {
+            try {
+                node = new FXMLLoader(MainFX.class.getResource("/item.fxml")).load();
+                vScroll.getChildren().add(node);
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        }
     }
 }

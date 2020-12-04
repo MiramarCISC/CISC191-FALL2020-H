@@ -22,8 +22,8 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </padding>
                <children>
-                  <Button fx:id="closeYes" alignment="CENTER" mnemonicParsing="false" onAction="#closeButton" style="-fx-background-radius: 0;" text="YES" textFill="WHITE" />
-                  <Button fx:id="closeNo" alignment="CENTER" layoutX="15.0" layoutY="15.0" mnemonicParsing="false" onAction="#closeButton" style="-fx-background-radius: 0;" text="NO" textFill="WHITE" />
+                  <Button fx:id="closeYes" alignment="CENTER" mnemonicParsing="false" onAction="#closeButton" style="-fx-background-radius: 10 10 10;" text="YES" textFill="WHITE" />
+                  <Button fx:id="closeNo" alignment="CENTER" layoutX="15.0" layoutY="15.0" mnemonicParsing="false" onAction="#closeButton" style="-fx-background-radius: 10 10 10;" text="NO" textFill="WHITE" />
                </children>
             </HBox>
          </children>
