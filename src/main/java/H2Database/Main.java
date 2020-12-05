@@ -46,9 +46,7 @@ public class Main {
         services.shutdown();
 
         ResultSet resultSet = dbSource.getPurchaseHistory("3434bb35f");
-        while (resultSet.next()){
-            System.out.println(resultSet.getDouble("total"));
-        }
+        System.out.println(resultSet.next());
 
     }
 }

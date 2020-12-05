@@ -59,7 +59,7 @@ public class DBSource {
     }
 
 
-    public static Connection open() {
+    private static Connection open() {
         Connection connection;
         try {
             Class.forName("org.h2.Driver");
@@ -71,11 +71,10 @@ public class DBSource {
         }
     }
 
-    public static void close() {
-        Connection con = open();
+    private static void close(Connection connection) {
         try {
-            if (con != null)
-                con.close();
+            if (connection != null)
+                connection.close();
         } catch (SQLException e) {
             logger.severe("Close Connection Failed: " + e.getMessage());
         }
@@ -112,20 +111,30 @@ public class DBSource {
         else returnValue = rs.getString(CUSTOMER_COLUMN_CUSTOMERID);
         return returnValue;
     }
-
-    public String createCustomer(String name, int age, String phone, String address, String email, Connection connection) throws SQLException {
+    public String createCustomer(String name, int age, String phone, String address, String email) throws SQLException {
+        Connection connection = DBSource.open();
         insertIntoCustomer = connection.prepareStatement(INSERT_CUSTOMER);
+        String beautifiedPhone;
+
+        try{
+            beautifiedPhone = beatifyPhone(phone);
+        }catch (StringIndexOutOfBoundsException exception){
+            beautifiedPhone = "";
+        }
+
         int modifiedRows;
         String newcustomerId = generateRandomID();
         insertIntoCustomer.setString(1, newcustomerId);
         insertIntoCustomer.setString(2, name);
         insertIntoCustomer.setInt(3, age);
         insertIntoCustomer.setString(4, email);
-        insertIntoCustomer.setString(5, phone);
+        insertIntoCustomer.setString(5, beautifiedPhone);
         insertIntoCustomer.setString(6, address);
         modifiedRows = insertIntoCustomer.executeUpdate();
         if (modifiedRows != 1)
             throw new SQLException("Insert Into CUSTOMERS Failed!!!");
+        DBSource.close(connection);
+        logger.info("Added Customer With ID: "+newcustomerId);
         return newcustomerId;
     }
 
@@ -191,7 +200,7 @@ public class DBSource {
             try {
                 logger.info("Resetting auto-commit...");
                 connection.setAutoCommit(true);
-                DBSource.close();
+                DBSource.close(connection);
             } catch (SQLException e3) {
                 logger.severe("Reset Auto-commit Failed: " + e3.getMessage());
             }
@@ -216,21 +225,24 @@ public class DBSource {
 
     private ResultSet queryINFO(String query, String key) {
         Connection connection = DBSource.open();
-        ResultSet resultSet = null;
         try {
             queryInfo = connection.prepareStatement(query);
             queryInfo.setString(1, key);
-            resultSet = queryInfo.executeQuery();
+            return queryInfo.executeQuery();
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
-        } finally {
-            DBSource.close();
         }
-        return resultSet;
+        DBSource.close(connection);
+        return null;
+
     }
 
     private String generateRandomID() {
         return UUID.randomUUID().toString().split("-")[4];
+    }
+
+    private String beatifyPhone(String phone){
+        return "+1 "+"("+phone.substring(0,3)+") "+phone.substring(3,6)+"-"+phone.substring(6);
     }
 
 }

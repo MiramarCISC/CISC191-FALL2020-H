@@ -1,5 +1,6 @@
 package FX.mainFX;
 
+import FX.customer_console.CustomerController;
 import FX.fx_model.PurchaseHistory;
 import H2Database.db_control.DBSource;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
@@ -27,6 +28,8 @@ import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
+    @FXML
+    private Label labelHistory;
 
     @FXML
     private Label mainText;
@@ -38,13 +41,17 @@ public class MainController implements Initializable {
     private Button purchases;
 
     @FXML
-    private TextField textHistory;
-
-    @FXML
     private Button searchHistory;
 
     @FXML
-    private Label labelHistory;
+    private Button newCustomer;
+
+
+    @FXML
+    private TextField validateCustomer;
+
+    @FXML
+    private TextField textHistory;
 
     @FXML
     private TableView<PurchaseHistory> tableView;
@@ -71,7 +78,7 @@ public class MainController implements Initializable {
     private GridPane purchasesPane;
 
     private ObservableList observableList = FXCollections.observableArrayList();
-    private DBSource dbSource;
+    private static DBSource dbSource;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -92,7 +99,7 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    public void searchHistoryButton(ActionEvent event) {
+    public void searchHistoryButton(ActionEvent event) throws SQLException {
         tableView.getItems().clear();
         String keyID = textHistory.getText();
         ResultSet resultSet;
@@ -123,18 +130,24 @@ public class MainController implements Initializable {
     @FXML
     void handleClose(MouseEvent event) {
         if (event.getSource() == close)
-            close();
+            buildNewStage("Exit", "close");
     }
 
+    @FXML
+    public void createCustomer(ActionEvent event) {
+        if (event.getSource() == newCustomer) {
+            buildNewStage("New Customer", "newcustomer");
+        }
+    }
 
-    private static void close() {
+    private void buildNewStage(String title, String fxmlName) {
         try {
             Stage closeStage = new Stage();
-            FXMLLoader loader = new FXMLLoader(MainFX.class.getResource("/close.fxml"));
+            FXMLLoader loader = new FXMLLoader(MainFX.class.getResource("/" + fxmlName + ".fxml"));
             Pane root = loader.load();
             Scene scene = new Scene(root);
 
-            closeStage.setTitle("Exit");
+            closeStage.setTitle(title);
             closeStage.initModality(Modality.APPLICATION_MODAL);
             closeStage.setScene(scene);
             closeStage.setResizable(false);
@@ -155,5 +168,10 @@ public class MainController implements Initializable {
                 ioException.printStackTrace();
             }
         }
+
+    }
+
+    public static DBSource getDbSource() {
+        return dbSource;
     }
 }
