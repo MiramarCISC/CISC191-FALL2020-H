@@ -1,8 +1,10 @@
 package FX.mainFX;
 
-import FX.customer_console.CustomerController;
+import FX.fx_model.ItemCellFactory;
 import FX.fx_model.PurchaseHistory;
 import H2Database.db_control.DBSource;
+import H2Database.db_model.*;
+
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,14 +12,12 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -41,14 +43,7 @@ public class MainController implements Initializable {
     private Button purchases;
 
     @FXML
-    private Button searchHistory;
-
-    @FXML
     private Button newCustomer;
-
-
-    @FXML
-    private TextField validateCustomer;
 
     @FXML
     private TextField textHistory;
@@ -69,7 +64,7 @@ public class MainController implements Initializable {
     private FontAwesomeIcon close;
 
     @FXML
-    private VBox vScroll;
+    private ListView<Map.Entry<Book,Integer>> listView;
 
     @FXML
     private GridPane checkOutPane;
@@ -79,16 +74,27 @@ public class MainController implements Initializable {
 
     private ObservableList observableList = FXCollections.observableArrayList();
     private static DBSource dbSource;
+    private ShoppingCart shoppingCart = new ShoppingCart();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         dbSource = DBSource.getConnection();
         dbSource.preload();
-        buildCustomList();
+
+        shoppingCart.addToCartUsingISBN("1617291269");
+        shoppingCart.addToCartUsingISBN("193398886X");
+        shoppingCart.addToCartUsingISBN("1933988797");
+        shoppingCart.addToCartUsingISBN("1932394885");
+
+        listView.setCellFactory(new ItemCellFactory());
+
+        Iterator<Map.Entry<Book, Integer>> itr = shoppingCart.getCurCart().entrySet().iterator();
+        while (itr.hasNext())
+            listView.getItems().add(itr.next());
     }
 
     @FXML
-    public void changeSection(ActionEvent event) throws SQLException {
+    public void changeSection(ActionEvent event){
         if (event.getSource() == checkout) {
             mainText.setText("Checkout");
             checkOutPane.toFront();
@@ -99,7 +105,7 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    public void searchHistoryButton(ActionEvent event) throws SQLException {
+    public void searchHistoryButton(ActionEvent event){
         tableView.getItems().clear();
         String keyID = textHistory.getText();
         ResultSet resultSet;
@@ -158,20 +164,24 @@ public class MainController implements Initializable {
         }
     }
 
-    private void buildCustomList() {
-        Node node;
-        for (int i = 0; i < 5; i++) {
-            try {
-                node = new FXMLLoader(MainFX.class.getResource("/item.fxml")).load();
-                vScroll.getChildren().add(node);
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
-        }
+
+    private void loadShoppingCart(ShoppingCart cart){
 
     }
+
 
     public static DBSource getDbSource() {
         return dbSource;
     }
 }
+//    private void buildCustomList() {
+//        for (int i = 0; i < 4; i++) {
+//            try {
+//                Parent parent = new FXMLLoader(MainFX.class.getResource("/item.fxml")).load();
+//                vScroll.getChildren().add(parent);
+//            } catch (IOException ioException) {
+//                ioException.printStackTrace();
+//            }
+//        }
+//
+//    }

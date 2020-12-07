@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException;
 
 public class Main {
 
@@ -21,22 +22,13 @@ public class Main {
         Thread thread = new Thread(()->{
 //            Customer customer = new Customer("5757281","Nghi Nguyen",17,"+1 (932) 586-3508","None","None");
             ShoppingCart cart = new ShoppingCart();
-            cart.updateCart(new Book("1617291269",
-                            "iOS in Practice",
-                            72.083,
-                            1,
-                            "2013-11-01",
-                            "Bear P. Cahill",
-                            "Mobile Technology"),
-                    1);
 
-            cart.updateCart(new Book("193398886X",
-                            "iPhone in Action",
-                            74.750,19,
-                            "2008-12-01",
-                            "Christopher Allen",
-                            "Web Development"),
-                    1);
+            cart.addToCartUsingISBN("1617291269");
+            cart.addToCartUsingISBN("193398886X");
+            cart.addToCartUsingISBN("1933988797");
+            cart.addToCartUsingISBN("1932394885");
+
+//            cart.updateCartUsingTitle("iPhone in Action", 1);
             dbSource.insertOrders("3434bb35f",cart);
         });
 
@@ -47,6 +39,5 @@ public class Main {
 
         ResultSet resultSet = dbSource.getPurchaseHistory("3434bb35f");
         System.out.println(resultSet.next());
-
     }
 }

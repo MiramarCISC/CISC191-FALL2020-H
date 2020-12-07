@@ -1,4 +1,4 @@
-package FX.customer_console;
+package FX.SecondaryController;
 
 import FX.mainFX.MainController;
 import H2Database.db_control.DBSource;
@@ -78,7 +78,7 @@ public class CustomerController implements Initializable {
     }
 
     private boolean isValidEmail(String email) {
-        String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+        String regex = "^[\\w-_.+]*[\\w-_.]@([\\w]+\\.)+[\\w]+[\\w]$";
         return email.matches(regex);
     }
 

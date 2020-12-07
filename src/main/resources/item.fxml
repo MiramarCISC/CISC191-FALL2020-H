@@ -4,65 +4,81 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListCell?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="167.0" prefWidth="726.0" style="-fx-background-color: #1E1E24; -fx-border-color: white;" stylesheets="@style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <VBox alignment="CENTER_LEFT" prefHeight="167.0" prefWidth="490.0" spacing="10.0">
+<fx:root prefHeight="169.0" prefWidth="737.0" style="-fx-background-color: #1E1E24; -fx-border-color: white;" type="javafx.scene.control.ListCell" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <graphic>
+      <HBox fx:id="hBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="169.0" prefWidth="737.0" style="-fx-background-color: #1E1E24;" stylesheets="@style.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label graphicTextGap="6.0" text="Title" textFill="WHITE">
-               <font>
-                  <Font name="System Bold" size="20.0" />
-               </font>
-               <padding>
-                  <Insets left="20.0" />
-               </padding>
-               <graphic>
-                  <FontAwesomeIcon fill="WHITE" glyphName="BOOK" size="1.5em" />
-               </graphic>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </Label>
-            <Label layoutX="68.0" layoutY="83.0" text="Author: " textFill="WHITE">
-               <padding>
-                  <Insets left="20.0" />
-               </padding>
-            </Label>
-            <Label layoutX="68.0" layoutY="94.0" text="Quantity:" textFill="WHITE">
-               <padding>
-                  <Insets left="20.0" />
-               </padding>
-            </Label>
-            <Label layoutX="68.0" layoutY="104.0" text="Price:" textFill="WHITE">
-               <padding>
-                  <Insets left="20.0" />
-               </padding>
-            </Label>
+            <VBox alignment="CENTER_LEFT" prefHeight="170.0" prefWidth="554.0" spacing="10.0">
+               <children>
+                  <Label fx:id="titleTF" graphicTextGap="6.0" text="Title" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="25.0" />
+                     </font>
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding>
+                     <graphic>
+                        <FontAwesomeIcon fill="WHITE" glyphName="BOOK" size="1.5em" />
+                     </graphic>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </Label>
+                  <Label fx:id="authorTF" layoutX="68.0" layoutY="83.0" text="Author: " textFill="WHITE">
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding>
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="quantityTF" layoutX="68.0" layoutY="94.0" text="Quantity:" textFill="WHITE">
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding>
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="priceTF" layoutX="68.0" layoutY="104.0" text="Price:" textFill="WHITE">
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding>
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </Label>
+               </children>
+            </VBox>
+            <HBox alignment="CENTER" prefHeight="167.0" prefWidth="250.0" spacing="11.0">
+               <children>
+                  <Button mnemonicParsing="false" style="-fx-background-color: white; -fx-background-radius: 5EM; -fx-border-color: BLACK; -fx-border-radius: 5EM; -fx-border-width: .0.1;" text="MORE">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Button>
+                  <Button layoutX="72.0" layoutY="81.0" mnemonicParsing="false" style="-fx-background-color: white; -fx-background-radius: 5EM; -fx-border-color: BLACK; -fx-border-radius: 5EM; -fx-border-width: .0.1;" text="LESS">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Button>
+                  <Button layoutX="105.0" layoutY="81.0" mnemonicParsing="false" style="-fx-background-color: white; -fx-background-radius: 5EM; -fx-border-color: BLACK; -fx-border-radius: 5EM; -fx-border-width: .0.1;" text="DELETE">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Button>
+               </children>
+               <HBox.margin>
+                  <Insets right="5.0" />
+               </HBox.margin>
+            </HBox>
          </children>
-      </VBox>
-      <HBox alignment="CENTER" prefHeight="167.0" prefWidth="250.0" spacing="11.0">
-         <children>
-            <Button mnemonicParsing="false" style="-fx-background-color: white; -fx-background-radius: 5EM; -fx-border-color: BLACK; -fx-border-radius: 5EM; -fx-border-width: .0.1;" text="MORE">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font></Button>
-            <Button layoutX="72.0" layoutY="81.0" mnemonicParsing="false" style="-fx-background-color: white; -fx-background-radius: 5EM; -fx-border-color: BLACK; -fx-border-radius: 5EM; -fx-border-width: .0.1;" text="LESS">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font>
-            </Button>
-            <Button layoutX="105.0" layoutY="81.0" mnemonicParsing="false" style="-fx-background-color: white; -fx-background-radius: 5EM; -fx-border-color: BLACK; -fx-border-radius: 5EM; -fx-border-width: .0.1;" text="DELETE">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font>
-            </Button>
-         </children>
-         <HBox.margin>
-            <Insets right="5.0" />
-         </HBox.margin>
       </HBox>
-   </children>
-</HBox>
+   </graphic>
+</fx:root>

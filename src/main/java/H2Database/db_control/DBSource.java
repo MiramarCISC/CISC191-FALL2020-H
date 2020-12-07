@@ -1,7 +1,6 @@
 package H2Database.db_control;
 
 import H2Database.db_model.Book;
-import H2Database.db_model.Customer;
 import H2Database.db_model.ShoppingCart;
 import H2Database.functionality.Logging;
 
@@ -26,24 +25,26 @@ public class DBSource {
     public static final String URL = "jdbc:h2:~/test;";
     public static final String CUSTOMER_COLUMN_CUSTOMERID = "customer_id";
     public static final String BOOK_COLUMN_STOCK = "stock";
+    public static final String BOOK_COLUMN_TITLE = "title";
     public static final String BOOK_COLUMN_ISBN = "isbn";
 
     public static final String QUERY_CUSTOMER_INFO = "SELECT * FROM CISC191.CUSTOMERS WHERE " + CUSTOMER_COLUMN_CUSTOMERID + " = ?";
-    public static final String QUERY_BOOKS_INFO = "SELECT * FROM CISC191.BOOKS WHERE " + BOOK_COLUMN_ISBN + " = ?";
+    public static final String QUERY_BOOKS_ISBN = "SELECT * FROM CISC191.BOOKS WHERE " + BOOK_COLUMN_ISBN + " = ?";
+    public static final String QUERY_BOOKS_TITLE = "SELECT * FROM CISC191.BOOKS WHERE " + BOOK_COLUMN_TITLE + " = ?";
     public static final String INSERT_CUSTOMER = "INSERT INTO CISC191.CUSTOMERS VALUES (?,?,?,?,?,?)";
     public static final String INSERT_ORDERS = "INSERT INTO CISC191.ORDERS VALUES (?,?,?)";
-    public static final String INSERT_ORDERITEMS = "INSERT INTO CISC191.ORDER_ITEMS VALUES (?,?,?)";
+    public static final String INSERT_ORDER_ITEMS = "INSERT INTO CISC191.ORDER_ITEMS VALUES (?,?,?)";
     public static final String UPDATE_BOOKS_STOCK = "UPDATE CISC191.BOOKS SET " + BOOK_COLUMN_STOCK + " = ? WHERE " + BOOK_COLUMN_ISBN + " = ?";
     public static final String QUERY_CUSTOMER_ORDER =
-                                                    "SELECT \n" +
-                                                    "    o.order_id,\n" +
-                                                    "    date_ordered,\n" +
-                                                    "    SUM(quantity*price) as total\n" +
-                                                    "FROM CISC191.orders as o\n" +
-                                                    "JOIN CISC191.order_items as oi ON o.order_id = oi.order_id\n" +
-                                                    "JOIN CISC191.books ON oi.isbn = books.isbn\n" +
-                                                    "WHERE customer_id = ? \n" +
-                                                    "GROUP BY o.order_id;";
+            "SELECT \n" +
+                    "    o.order_id,\n" +
+                    "    date_ordered,\n" +
+                    "    SUM(quantity*price) as total\n" +
+                    "FROM CISC191.orders as o\n" +
+                    "JOIN CISC191.order_items as oi ON o.order_id = oi.order_id\n" +
+                    "JOIN CISC191.books ON oi.isbn = books.isbn\n" +
+                    "WHERE customer_id = ? \n" +
+                    "GROUP BY o.order_id;";
 
     private final static String USERNAME = "sa";
     private final static String PASSWORD = "";
@@ -98,11 +99,11 @@ public class DBSource {
     }
 
     public ResultSet getPurchaseHistory(String customerID) throws SQLException {
-        ResultSet rs = queryINFO(QUERY_CUSTOMER_ORDER,customerID);
+        ResultSet rs = queryINFO(QUERY_CUSTOMER_ORDER, customerID);
         return rs;
     }
 
-    public String validateCustomer(String customerID,Connection connection) throws SQLException {
+    public String validateCustomer(String customerID, Connection connection) throws SQLException {
         insertIntoCustomer = connection.prepareStatement(INSERT_CUSTOMER);
         String returnValue;
         ResultSet rs = queryINFO(QUERY_CUSTOMER_INFO, customerID);
@@ -111,14 +112,15 @@ public class DBSource {
         else returnValue = rs.getString(CUSTOMER_COLUMN_CUSTOMERID);
         return returnValue;
     }
+
     public String createCustomer(String name, int age, String phone, String address, String email) throws SQLException {
         Connection connection = DBSource.open();
         insertIntoCustomer = connection.prepareStatement(INSERT_CUSTOMER);
         String beautifiedPhone;
 
-        try{
+        try {
             beautifiedPhone = beatifyPhone(phone);
-        }catch (StringIndexOutOfBoundsException exception){
+        } catch (StringIndexOutOfBoundsException exception) {
             beautifiedPhone = "";
         }
 
@@ -134,7 +136,7 @@ public class DBSource {
         if (modifiedRows != 1)
             throw new SQLException("Insert Into CUSTOMERS Failed!!!");
         DBSource.close(connection);
-        logger.info("Added Customer With ID: "+newcustomerId);
+        logger.info("Added Customer With ID: " + newcustomerId);
         return newcustomerId;
     }
 
@@ -145,7 +147,7 @@ public class DBSource {
         int quantity;
         String isbn;
         Map.Entry<Book, Integer> bookEntry;
-        insertIntoOrderItems = connection.prepareStatement(INSERT_ORDERITEMS);
+        insertIntoOrderItems = connection.prepareStatement(INSERT_ORDER_ITEMS);
 
         while (itr.hasNext()) {
             bookEntry = itr.next();
@@ -175,7 +177,7 @@ public class DBSource {
 
             String newOrderId = generateRandomID();
             insertIntoOrders.setString(1, newOrderId);
-            insertIntoOrders.setString(2, validateCustomer(customerID,connection));
+            insertIntoOrders.setString(2, validateCustomer(customerID, connection));
             insertIntoOrders.setDate(3, (Date) cart.getOrderedDate());
 
             int modifiedRows = insertIntoOrders.executeUpdate();
@@ -210,7 +212,7 @@ public class DBSource {
     }
 
     public void updateStock(String isbn, int requestedStock, Connection connection) throws SQLException {
-        ResultSet resultSet = queryINFO(QUERY_BOOKS_INFO, isbn);
+        ResultSet resultSet = queryINFO(QUERY_BOOKS_ISBN, isbn);
         resultSet.next();
         int availableStock = resultSet.getInt(BOOK_COLUMN_STOCK);
         PreparedStatement updateBookStock = connection.prepareStatement(UPDATE_BOOKS_STOCK);
@@ -237,12 +239,40 @@ public class DBSource {
 
     }
 
+    public ResultSet getBookInfoByTitle(String title) {
+        ResultSet result = queryINFO(QUERY_BOOKS_TITLE, title);
+        return result;
+    }
+
+    public ResultSet getBookInfoByISBN(String isbn) {
+        ResultSet result = queryINFO(QUERY_BOOKS_ISBN, isbn);
+        return result;
+    }
+
     private String generateRandomID() {
         return UUID.randomUUID().toString().split("-")[4];
     }
 
-    private String beatifyPhone(String phone){
-        return "+1 "+"("+phone.substring(0,3)+") "+phone.substring(3,6)+"-"+phone.substring(6);
+    private String beatifyPhone(String phone) {
+        return "+1 " + "(" + phone.substring(0, 3) + ") " + phone.substring(3, 6) + "-" + phone.substring(6);
     }
+
+//    private int getRowCount(ResultSet resultSet) {
+//        if (resultSet == null)
+//            return 0;
+//        try {
+//            resultSet.last();
+//            return resultSet.getRow();
+//        } catch (SQLException sqlException) {
+//            logger.severe(sqlException.getMessage());
+//        } finally {
+//            try {
+//                resultSet.beforeFirst();
+//            } catch (SQLException sqlException) {
+//                logger.severe(sqlException.getMessage());
+//            }
+//        }
+//        return 0;
+//    }
 
 }

@@ -1,4 +1,4 @@
-package FX.close_console;
+package FX.SecondaryController;
 
 import FX.mainFX.MainFX;
 import javafx.event.ActionEvent;
