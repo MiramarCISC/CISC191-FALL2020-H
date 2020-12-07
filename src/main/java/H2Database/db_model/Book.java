@@ -1,5 +1,7 @@
 package H2Database.db_model;
 
+import java.util.Objects;
+
 public class Book {
     private String isbn;
     private String title;
@@ -41,5 +43,23 @@ public class Book {
 
     public String getPublishedDate() {
         return publishedDate;
+    }
+
+    public Book(String isbn) {
+        this.isbn = isbn;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getIsbn());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Book)) return false;
+        Book book = (Book) obj;
+        return Objects.equals(getIsbn(), book.getIsbn())
+                ||Objects.equals(getTitle(), book.getTitle());
     }
 }

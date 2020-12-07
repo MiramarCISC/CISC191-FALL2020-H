@@ -33,6 +33,22 @@ public class ShoppingCart {
         return orderedDate;
     }
 
+    public Book findBookISBN(String isbn){
+        Book result = curCart.keySet().stream()
+                                .filter(e -> e.getIsbn().equals(isbn))
+                                .findFirst()
+                                .orElse(null);
+        return result;
+    }
+    public Book findBookTitle(String title){
+        Book result = curCart.keySet().stream()
+                                .filter(e -> e.getTitle().equals(title))
+                                .findFirst()
+                                .orElse(null);
+        return result;
+    }
+
+
     public void updateCartUsingISBN(String isbn,int newQuantity){
         ResultSet bookResult = DBSource.getConnection().getBookInfoByISBN(isbn);
         try {

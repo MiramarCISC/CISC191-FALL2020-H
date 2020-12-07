@@ -1,5 +1,6 @@
 package FX.mainFX;
 
+import H2Database.db_model.ShoppingCart;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,6 +9,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class MainFX extends Application {
+
     private double xOffset = 0;
     private double yOffset = 0;
 
@@ -17,13 +19,14 @@ public class MainFX extends Application {
         launch(args);
     }
 
+
     @Override
     public void start(Stage stage) throws Exception {
         primaryStage = stage;
         FXMLLoader loader = new FXMLLoader(MainFX.class.getResource("/main.fxml"));
         Parent root = loader.load();
 
-        //makes the window moveable
+        //makes the window movable
         //reference: https://stackoverflow.com/questions/13206193/how-to-make-an-undecorated-window-movable-draggable-in-javafx
         root.setOnMousePressed(event->{
                 xOffset = event.getSceneX();

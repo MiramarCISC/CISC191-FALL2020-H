@@ -40,6 +40,9 @@ public class MainController implements Initializable {
     private Button checkout;
 
     @FXML
+    private Button addBook;
+
+    @FXML
     private Button purchases;
 
     @FXML
@@ -47,6 +50,9 @@ public class MainController implements Initializable {
 
     @FXML
     private TextField textHistory;
+
+    @FXML
+    private TextField searchBook;
 
     @FXML
     private TableView<PurchaseHistory> tableView;
@@ -72,25 +78,23 @@ public class MainController implements Initializable {
     @FXML
     private GridPane purchasesPane;
 
+    private ShoppingCart shoppingCart = new ShoppingCart();
+
     private ObservableList observableList = FXCollections.observableArrayList();
     private static DBSource dbSource;
-    private ShoppingCart shoppingCart = new ShoppingCart();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         dbSource = DBSource.getConnection();
         dbSource.preload();
 
-        shoppingCart.addToCartUsingISBN("1617291269");
-        shoppingCart.addToCartUsingISBN("193398886X");
-        shoppingCart.addToCartUsingISBN("1933988797");
-        shoppingCart.addToCartUsingISBN("1932394885");
-
         listView.setCellFactory(new ItemCellFactory());
 
-        Iterator<Map.Entry<Book, Integer>> itr = shoppingCart.getCurCart().entrySet().iterator();
-        while (itr.hasNext())
-            listView.getItems().add(itr.next());
+//        Iterator<Map.Entry<Book, Integer>> itr = MainFX.getShoppingCart().getCurCart().entrySet().iterator();
+//        while (itr.hasNext())
+//            listView.getItems().add(itr.next());
+
+
     }
 
     @FXML
@@ -165,13 +169,25 @@ public class MainController implements Initializable {
     }
 
 
-    private void loadShoppingCart(ShoppingCart cart){
+    private void addShoppingCart(ShoppingCart cart,String isbn){
+        cart.addToCartUsingISBN(isbn);
+        Map.Entry entry = cart.getCurCart().entrySet().stream()
+                .filter(e -> e.getKey().getIsbn().equals(isbn))
+                .findFirst()
+                .orElse(null);
+
+        listView.getItems().add(entry);
 
     }
 
 
     public static DBSource getDbSource() {
         return dbSource;
+    }
+
+    public void addBookToCart(ActionEvent event) {
+        String isbn  = searchBook.getText();
+        addShoppingCart(shoppingCart,isbn);
     }
 }
 //    private void buildCustomList() {

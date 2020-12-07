@@ -85,16 +85,17 @@
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
                </columnConstraints>
                <rowConstraints>
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="89.60001220703126" minHeight="10.0" prefHeight="57.600012207031256" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="365.5999816894531" minHeight="10.0" prefHeight="344.00005493164065" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="101.1999572753906" minHeight="10.0" prefHeight="65.99994506835935" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <ScrollPane prefHeight="379.0" prefWidth="750.0" stylesheets="@style.css" GridPane.rowIndex="1">
+                  <ScrollPane hbarPolicy="NEVER" prefHeight="229.0" prefWidth="750.0" stylesheets="@style.css" GridPane.rowIndex="1">
                      <content>
                         <ListView fx:id="listView" prefHeight="402.0" prefWidth="735.0" />
                      </content>
                   </ScrollPane>
-                  <Pane prefHeight="66.0" prefWidth="697.0" style="-fx-background-color: white;">
+                  <Pane prefHeight="66.0" prefWidth="697.0" style="-fx-background-color: white;" GridPane.rowIndex="2">
                      <children>
                         <HBox alignment="CENTER_LEFT" prefHeight="68.0" prefWidth="750.0" spacing="10.0">
                            <children>
@@ -129,6 +130,34 @@
                                     <Insets right="10.0" />
                                  </HBox.margin>
                               </Button>
+                           </children>
+                        </HBox>
+                     </children>
+                  </Pane>
+                  <Pane layoutX="10.0" layoutY="10.0" prefHeight="66.0" prefWidth="697.0" style="-fx-background-color: white;">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="68.0" prefWidth="750.0" spacing="10.0">
+                           <children>
+                              <TextField fx:id="searchBook" prefHeight="30.0" prefWidth="170.0" promptText="Enter ISBN Here" style="-fx-background-radius: 5em; -fx-border-color: #32373B; -fx-border-radius: 5em;">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                                 <opaqueInsets>
+                                    <Insets left="10.0" />
+                                 </opaqueInsets>
+                                 <HBox.margin>
+                                    <Insets left="10.0" />
+                                 </HBox.margin>
+                              </TextField>
+                              <Button fx:id="addBook" graphicTextGap="10.0" mnemonicParsing="false" onAction="#addBookToCart" style="-fx-background-radius: 5em;" stylesheets="@style.css" text="Add Book" textFill="WHITE">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                                 <graphic>
+                                    <FontAwesomeIcon fill="WHITE" glyphName="PLUS" size="1.1em" />
+                                 </graphic>
+                              </Button>
+                              <Region prefHeight="68.0" prefWidth="220.0" HBox.hgrow="ALWAYS" />
                            </children>
                         </HBox>
                      </children>
