@@ -38,7 +38,7 @@ public class ShoppingCart {
         return isInCartISBN(isbnOrTitle) || isInCartTitle(isbnOrTitle);
     }
 
-    public void updateCartUsingISBN(String isbn, int newQuantity) {
+    protected void updateCartUsingISBN(String isbn, int newQuantity) {
         Book book;
         try(ResultSet bookResult = DBSource.getConnection().getBookInfoByISBN(isbn)) {
             bookResult.next();
@@ -57,7 +57,7 @@ public class ShoppingCart {
         }
     }
 
-    public void updateCartUsingTitle(String title, int newQuantity) {
+    protected void updateCartUsingTitle(String title, int newQuantity) {
         Book book;
         try(ResultSet bookResult = DBSource.getConnection().getBookInfoByTitle(title)) {
             bookResult.next();

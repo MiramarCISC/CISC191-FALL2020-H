@@ -135,7 +135,7 @@ public class MainController implements Initializable {
     @FXML
     public void addBookToCart(ActionEvent event) {
         String bookInfo = searchBook.getText();
-        addShoppingCart(shoppingCart, bookInfo);
+        addToShoppingCart(shoppingCart, bookInfo);
         searchBook.clear();
     }
 
@@ -157,7 +157,7 @@ public class MainController implements Initializable {
         }
     }
 
-    private void addShoppingCart(ShoppingCart cart, String bookInfo) {
+    private void addToShoppingCart(ShoppingCart cart, String bookInfo) {
         if (!cart.isInCart(bookInfo)) {
             Map.Entry entry;
             if(!bookInfo.contains(" ")) {
@@ -181,7 +181,8 @@ public class MainController implements Initializable {
                 addBookMS.setText("No Book Found");
         }
     }
-
+    public void deleteFromShoppingCart(){
+    }
 }
 //    private void buildCustomList() {
 //        for (int i = 0; i < 4; i++) {

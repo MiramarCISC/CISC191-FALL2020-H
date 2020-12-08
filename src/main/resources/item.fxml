@@ -68,7 +68,7 @@
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Button>
-                  <Button layoutX="105.0" layoutY="81.0" mnemonicParsing="false" style="-fx-background-color: white; -fx-background-radius: 5EM; -fx-border-color: BLACK; -fx-border-radius: 5EM; -fx-border-width: .0.1;" text="DELETE">
+                  <Button fx:id="deleteBTN" layoutX="105.0" layoutY="81.0" mnemonicParsing="false" style="-fx-background-color: white; -fx-background-radius: 5EM; -fx-border-color: BLACK; -fx-border-radius: 5EM; -fx-border-width: .0.1;" text="DELETE">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>

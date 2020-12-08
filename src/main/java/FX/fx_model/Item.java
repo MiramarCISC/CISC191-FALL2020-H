@@ -3,6 +3,7 @@ package FX.fx_model;
 import H2Database.db_model.Book;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
@@ -26,6 +27,10 @@ public class Item extends ListCell<Map.Entry<Book, Integer>> {
 
     @FXML
     private HBox hBox;
+
+    @FXML
+    private Button deleteBTN;
+
 
     public Item() {
         loadFXML();
@@ -73,5 +78,9 @@ public class Item extends ListCell<Map.Entry<Book, Integer>> {
             setText(null);
             setGraphic(hBox);
         }
+    }
+
+    public Button getDeleteBTN() {
+        return deleteBTN;
     }
 }
