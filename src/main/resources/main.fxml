@@ -110,7 +110,7 @@
                                     <Insets left="10.0" />
                                  </HBox.margin>
                               </TextField>
-                              <Button fx:id="processOrder" graphicTextGap="10.0" mnemonicParsing="false" style="-fx-background-radius: 5em;" stylesheets="@style.css" text="Process Order" textFill="WHITE">
+                              <Button fx:id="processOrder" graphicTextGap="10.0" mnemonicParsing="false" onAction="#processOrder" style="-fx-background-radius: 5em;" stylesheets="@style.css" text="Process Order" textFill="WHITE">
                                  <font>
                                     <Font size="15.0" />
                                  </font>

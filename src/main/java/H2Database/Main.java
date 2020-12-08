@@ -2,13 +2,7 @@ package H2Database;
 
 import H2Database.db_control.*;
 import H2Database.db_model.*;
-
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException;
 
 public class Main {
 

@@ -6,6 +6,8 @@ import H2Database.db_control.DBSource;
 import H2Database.db_model.Book;
 import H2Database.db_model.ShoppingCart;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -26,10 +28,15 @@ import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.stream.IntStream;
 
 public class MainController implements Initializable {
+    private static StringProperty deletedItem = new SimpleStringProperty();
+
     private static DBSource dbSource;
+
     @FXML
     private Label labelHistory;
     @FXML
@@ -71,12 +78,18 @@ public class MainController implements Initializable {
         return dbSource;
     }
 
+    public static StringProperty deletedItemProperty() {
+        return deletedItem;
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         dbSource = DBSource.getConnection();
         dbSource.preload();
 
         listView.setCellFactory(new ItemCellFactory());
+
+        deletedItem.addListener((observableValue, oldValue, newValue) -> deleteBook(newValue));
     }
 
     @FXML
@@ -135,7 +148,7 @@ public class MainController implements Initializable {
     @FXML
     public void addBookToCart(ActionEvent event) {
         String bookInfo = searchBook.getText();
-        addToShoppingCart(shoppingCart, bookInfo);
+        addBook(shoppingCart, bookInfo);
         searchBook.clear();
     }
 
@@ -157,17 +170,24 @@ public class MainController implements Initializable {
         }
     }
 
-    private void addToShoppingCart(ShoppingCart cart, String bookInfo) {
+    @FXML
+    public void processOrder(ActionEvent event) {
+        int selected = listView.getSelectionModel().getSelectedIndex();
+        System.out.println(selected);
+        listView.getItems().remove(selected);
+    }
+
+    private void addBook(ShoppingCart cart, String info) {
+        String bookInfo = info.trim();
         if (!cart.isInCart(bookInfo)) {
             Map.Entry entry;
-            if(!bookInfo.contains(" ")) {
+            if (!bookInfo.contains(" ")) {
                 cart.addToCartUsingISBN(bookInfo);
                 entry = cart.getCurCart().entrySet().stream()
                         .filter(e -> e.getKey().getIsbn().equals(bookInfo))
                         .findFirst()
                         .orElse(null);
-            }
-            else {
+            } else {
                 cart.addToCartUsingTitle(bookInfo);
                 entry = cart.getCurCart().entrySet().stream()
                         .filter(e -> e.getKey().getTitle().equals(bookInfo))
@@ -181,7 +201,33 @@ public class MainController implements Initializable {
                 addBookMS.setText("No Book Found");
         }
     }
-    public void deleteFromShoppingCart(){
+    
+    private void deleteBook(String value) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Deleting Book");
+        String[] strings = value.split(",");
+        String title = strings[0];
+        String isbn = strings[1];
+        alert.setContentText("Delete " + title + " ?");
+        Optional<ButtonType> answer = alert.showAndWait();
+        ObservableList<Map.Entry<Book, Integer>> items = listView.getItems();
+        if (answer.get() == ButtonType.OK) {
+            shoppingCart.removeFromCart(new Book(isbn));
+            int selectedIndex = IntStream
+                    .range(0, items.size())
+                    .filter(i -> items.get(i).getKey().getIsbn().equals(isbn))
+                    .findFirst()
+                    .orElse(-1);
+            listView.getItems().remove(selectedIndex);
+        } else {
+            deletedItem.unbind();
+            deletedItem.setValue("");
+            //Reference: https://github.com/afsalashyana/Library-Assistant/blob/master/src/library/assistant/alert/AlertMaker.java
+            alert.setTitle("Deletion Canceled");
+            alert.setHeaderText(null);
+            alert.setContentText("DELETION PROCESS CANCELED!");
+            alert.showAndWait();
+        }
     }
 }
 //    private void buildCustomList() {

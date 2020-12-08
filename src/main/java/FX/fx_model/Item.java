@@ -1,6 +1,9 @@
 package FX.fx_model;
 
+import FX.mainFX.MainController;
 import H2Database.db_model.Book;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -12,6 +15,8 @@ import java.io.IOException;
 import java.util.Map;
 
 public class Item extends ListCell<Map.Entry<Book, Integer>> {
+
+    private StringProperty bookName = new SimpleStringProperty();
 
     @FXML
     private Label titleTF;
@@ -31,7 +36,6 @@ public class Item extends ListCell<Map.Entry<Book, Integer>> {
     @FXML
     private Button deleteBTN;
 
-
     public Item() {
         loadFXML();
     }
@@ -42,8 +46,7 @@ public class Item extends ListCell<Map.Entry<Book, Integer>> {
             loader.setController(this);
             loader.setRoot(this);
             loader.load();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -51,7 +54,7 @@ public class Item extends ListCell<Map.Entry<Book, Integer>> {
     @Override
     protected void updateItem(Map.Entry<Book, Integer> item, boolean empty) {
         super.updateItem(item, empty);
-        if (empty) {
+        if (empty||item==null) {
             setText(null);
             setGraphic(null);
         } else {
@@ -66,10 +69,8 @@ public class Item extends ListCell<Map.Entry<Book, Integer>> {
                 title = item.getKey().getTitle();
                 author = "Author: " + item.getKey().getAuthor();
                 quantity = "Quantity: " + String.valueOf(item.getValue());
-                price = "Price: $"+ String.valueOf(item.getKey().getPrice());
+                price = "Price: $" + String.valueOf(item.getKey().getPrice());
             }
-
-
             titleTF.setText(title);
             authorTF.setText(author);
             quantityTF.setText(quantity);
@@ -77,10 +78,10 @@ public class Item extends ListCell<Map.Entry<Book, Integer>> {
 
             setText(null);
             setGraphic(hBox);
+            deleteBTN.setOnMouseClicked(event -> {
+                bookName.setValue(item.getKey().getTitle()+","+item.getKey().getIsbn());
+                MainController.deletedItemProperty().bind(bookName);
+            });
         }
-    }
-
-    public Button getDeleteBTN() {
-        return deleteBTN;
     }
 }
