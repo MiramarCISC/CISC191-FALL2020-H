@@ -10,18 +10,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ShoppingCart {
+    private final int INITIAL_QUANTITY = 1;
     Map<Book, Integer> curCart = new HashMap<>();
     Date orderedDate;
 
-    private final int INITIAL_QUANTITY = 1;
+    public void addToCartUsingISBN(String isbn) {
+        updateCartUsingISBN(isbn, INITIAL_QUANTITY);
+    }
 
-    public void addToCartUsingISBN(String isbn){
-        updateCartUsingISBN(isbn,INITIAL_QUANTITY);
+    public void addToCartUsingTitle(String title) {
+        updateCartUsingTitle(title, INITIAL_QUANTITY);
     }
-    public void addToCartUsingTitle(String title){
-        updateCartUsingTitle(title,INITIAL_QUANTITY);
-    }
-    public void removeFromCart(Book item){
+
+    public void removeFromCart(Book item) {
         curCart.remove(item);
     }
 
@@ -33,27 +34,15 @@ public class ShoppingCart {
         return orderedDate;
     }
 
-    public Book findBookISBN(String isbn){
-        Book result = curCart.keySet().stream()
-                                .filter(e -> e.getIsbn().equals(isbn))
-                                .findFirst()
-                                .orElse(null);
-        return result;
-    }
-    public Book findBookTitle(String title){
-        Book result = curCart.keySet().stream()
-                                .filter(e -> e.getTitle().equals(title))
-                                .findFirst()
-                                .orElse(null);
-        return result;
+    public boolean isInCart(String isbnOrTitle) {
+        return isInCartISBN(isbnOrTitle) || isInCartTitle(isbnOrTitle);
     }
 
-
-    public void updateCartUsingISBN(String isbn,int newQuantity){
-        ResultSet bookResult = DBSource.getConnection().getBookInfoByISBN(isbn);
-        try {
+    public void updateCartUsingISBN(String isbn, int newQuantity) {
+        Book book;
+        try(ResultSet bookResult = DBSource.getConnection().getBookInfoByISBN(isbn)) {
             bookResult.next();
-            Book book = new Book(
+            book = new Book(
                     bookResult.getString("isbn"),
                     bookResult.getString("title"),
                     bookResult.getDouble("price"),
@@ -62,30 +51,45 @@ public class ShoppingCart {
                     bookResult.getString("author"),
                     bookResult.getString("category")
             );
-            updateCart(book,newQuantity);
-        } catch (SQLException sqlException){
-            sqlException.printStackTrace();
-        }
-    }
-    public void updateCartUsingTitle(String title,int newQuantity){
-        ResultSet bookResult = DBSource.getConnection().getBookInfoByTitle(title);
-        try {
-            bookResult.next();
-            Book book = new Book(
-                    bookResult.getString("isbn"),
-                    bookResult.getString("title"),
-                    bookResult.getDouble("price"),
-                    bookResult.getInt("stock"),
-                    bookResult.getString("publishedDate"),
-                    bookResult.getString("author"),
-                    bookResult.getString("category")
-            );
-            updateCart(book,newQuantity);
+            updateCart(book, newQuantity);
         } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
+            book = null;
         }
     }
-    private void updateCart(Book item, int newQuantity){
-        curCart.put(item,newQuantity);
+
+    public void updateCartUsingTitle(String title, int newQuantity) {
+        Book book;
+        try(ResultSet bookResult = DBSource.getConnection().getBookInfoByTitle(title)) {
+            bookResult.next();
+            book = new Book(
+                    bookResult.getString("isbn"),
+                    bookResult.getString("title"),
+                    bookResult.getDouble("price"),
+                    bookResult.getInt("stock"),
+                    bookResult.getString("publishedDate"),
+                    bookResult.getString("author"),
+                    bookResult.getString("category")
+            );
+            updateCart(book, newQuantity);
+        } catch (SQLException sqlException) {
+            book = null;
+        }
+    }
+
+
+    private boolean isInCartISBN(String isbn) {
+        return curCart.containsKey(new Book(isbn));
+    }
+
+    private boolean isInCartTitle(String title) {
+        Book result = curCart.keySet().stream()
+                .filter(e -> e.getTitle().equals(title))
+                .findFirst()
+                .orElse(null);
+        return (result != null);
+    }
+
+    private void updateCart(Book item, int newQuantity) {
+        curCart.put(item, newQuantity);
     }
 }

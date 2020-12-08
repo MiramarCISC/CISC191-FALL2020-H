@@ -3,8 +3,8 @@ package FX.mainFX;
 import FX.fx_model.ItemCellFactory;
 import FX.fx_model.PurchaseHistory;
 import H2Database.db_control.DBSource;
-import H2Database.db_model.*;
-
+import H2Database.db_model.Book;
+import H2Database.db_model.ShoppingCart;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,63 +25,51 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
+    private static DBSource dbSource;
     @FXML
     private Label labelHistory;
-
+    @FXML
+    private Label addBookMS;
     @FXML
     private Label mainText;
-
     @FXML
     private Button checkout;
-
     @FXML
     private Button addBook;
-
     @FXML
     private Button purchases;
-
     @FXML
     private Button newCustomer;
-
     @FXML
     private TextField textHistory;
-
     @FXML
     private TextField searchBook;
-
     @FXML
     private TableView<PurchaseHistory> tableView;
-
     @FXML
     private TableColumn<PurchaseHistory, String> orderIDColumn;
-
     @FXML
     private TableColumn<PurchaseHistory, Double> dateOrderedColumn;
-
     @FXML
     private TableColumn<PurchaseHistory, String> totalColumn;
-
     @FXML
     private FontAwesomeIcon close;
-
     @FXML
-    private ListView<Map.Entry<Book,Integer>> listView;
-
+    private ListView<Map.Entry<Book, Integer>> listView;
     @FXML
     private GridPane checkOutPane;
-
     @FXML
     private GridPane purchasesPane;
-
     private ShoppingCart shoppingCart = new ShoppingCart();
-
     private ObservableList observableList = FXCollections.observableArrayList();
-    private static DBSource dbSource;
+
+    public static DBSource getDbSource() {
+        return dbSource;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -89,16 +77,10 @@ public class MainController implements Initializable {
         dbSource.preload();
 
         listView.setCellFactory(new ItemCellFactory());
-
-//        Iterator<Map.Entry<Book, Integer>> itr = MainFX.getShoppingCart().getCurCart().entrySet().iterator();
-//        while (itr.hasNext())
-//            listView.getItems().add(itr.next());
-
-
     }
 
     @FXML
-    public void changeSection(ActionEvent event){
+    public void changeSection(ActionEvent event) {
         if (event.getSource() == checkout) {
             mainText.setText("Checkout");
             checkOutPane.toFront();
@@ -109,7 +91,7 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    public void searchHistoryButton(ActionEvent event){
+    public void searchHistoryButton(ActionEvent event) {
         tableView.getItems().clear();
         String keyID = textHistory.getText();
         ResultSet resultSet;
@@ -150,6 +132,13 @@ public class MainController implements Initializable {
         }
     }
 
+    @FXML
+    public void addBookToCart(ActionEvent event) {
+        String bookInfo = searchBook.getText();
+        addShoppingCart(shoppingCart, bookInfo);
+        searchBook.clear();
+    }
+
     private void buildNewStage(String title, String fxmlName) {
         try {
             Stage closeStage = new Stage();
@@ -168,27 +157,31 @@ public class MainController implements Initializable {
         }
     }
 
+    private void addShoppingCart(ShoppingCart cart, String bookInfo) {
+        if (!cart.isInCart(bookInfo)) {
+            Map.Entry entry;
+            if(!bookInfo.contains(" ")) {
+                cart.addToCartUsingISBN(bookInfo);
+                entry = cart.getCurCart().entrySet().stream()
+                        .filter(e -> e.getKey().getIsbn().equals(bookInfo))
+                        .findFirst()
+                        .orElse(null);
+            }
+            else {
+                cart.addToCartUsingTitle(bookInfo);
+                entry = cart.getCurCart().entrySet().stream()
+                        .filter(e -> e.getKey().getTitle().equals(bookInfo))
+                        .findFirst()
+                        .orElse(null);
+            }
 
-    private void addShoppingCart(ShoppingCart cart,String isbn){
-        cart.addToCartUsingISBN(isbn);
-        Map.Entry entry = cart.getCurCart().entrySet().stream()
-                .filter(e -> e.getKey().getIsbn().equals(isbn))
-                .findFirst()
-                .orElse(null);
-
-        listView.getItems().add(entry);
-
+            if (entry != null)
+                listView.getItems().add(entry);
+            else
+                addBookMS.setText("No Book Found");
+        }
     }
 
-
-    public static DBSource getDbSource() {
-        return dbSource;
-    }
-
-    public void addBookToCart(ActionEvent event) {
-        String isbn  = searchBook.getText();
-        addShoppingCart(shoppingCart,isbn);
-    }
 }
 //    private void buildCustomList() {
 //        for (int i = 0; i < 4; i++) {

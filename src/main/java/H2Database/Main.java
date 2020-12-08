@@ -48,7 +48,8 @@ public class Main {
         Book book = new Book("1617291269");
         Book book1 = shoppingCart.getCurCart().entrySet().iterator().next().getKey();
 
-//        System.out.println(book.equals(book1));
+        System.out.println(book);
+        System.out.println(shoppingCart.isInCart("iOS in Practice"));
 
     }
 }

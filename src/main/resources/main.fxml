@@ -138,7 +138,7 @@
                      <children>
                         <HBox alignment="CENTER_LEFT" prefHeight="68.0" prefWidth="750.0" spacing="10.0">
                            <children>
-                              <TextField fx:id="searchBook" prefHeight="30.0" prefWidth="170.0" promptText="Enter ISBN Here" style="-fx-background-radius: 5em; -fx-border-color: #32373B; -fx-border-radius: 5em;">
+                              <TextField fx:id="searchBook" prefHeight="30.0" prefWidth="191.0" promptText="Enter ISBN Or Title Here" style="-fx-background-radius: 5em; -fx-border-color: #32373B; -fx-border-radius: 5em;">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
@@ -157,6 +157,11 @@
                                     <FontAwesomeIcon fill="WHITE" glyphName="PLUS" size="1.1em" />
                                  </graphic>
                               </Button>
+                              <Label fx:id="addBookMS">
+                                 <font>
+                                    <Font name="System Bold" size="16.0" />
+                                 </font>
+                              </Label>
                               <Region prefHeight="68.0" prefWidth="220.0" HBox.hgrow="ALWAYS" />
                            </children>
                         </HBox>
