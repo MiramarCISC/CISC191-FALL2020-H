@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<HBox alignment="CENTER_LEFT" fillHeight="false" minHeight="-Infinity" minWidth="-Infinity" prefHeight="105.0" prefWidth="855.0" style="-fx-background-color: #303138;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main_fx.ItemController">
+   <children>
+      <Label fx:id="isbnlbl" alignment="CENTER" prefHeight="118.0" prefWidth="148.0" text="ISBN" textAlignment="CENTER" textFill="#ccd4e8">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="titlelbl" alignment="CENTER" prefHeight="118.0" prefWidth="285.0" text="Title" textFill="#ccd4e8">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="authorlbl" alignment="CENTER" prefHeight="118.0" prefWidth="186.0" text="Author" textFill="#ccd4e8">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="pricelbl" alignment="CENTER" prefHeight="118.0" prefWidth="98.0" text="Price" textFill="#ccd4e8">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="quanlbl" alignment="CENTER" prefHeight="118.0" prefWidth="63.0" text="Quantity" textFill="#ccd4e8">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <JFXButton fx:id="removeButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" prefHeight="45.0" prefWidth="47.0" style="-fx-background-color: #292C34;" text="Clear" textFill="#b4bfe1">
+         <font>
+            <Font size="14.0" />
+         </font>
+         <graphic>
+            <ImageView fitHeight="29.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/trash-can-outline.png" />
+               </image>
+            </ImageView>
+         </graphic>
+         <HBox.margin>
+            <Insets left="15.0" />
+         </HBox.margin>
+      </JFXButton>
+   </children>
+</HBox>

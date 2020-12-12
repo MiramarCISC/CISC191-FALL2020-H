@@ -1,27 +1,14 @@
 package main_fx;
 
 
-import db_main.*;
 import db_model.*;
 
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.stage.Stage;
-import javafx.util.Callback;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import javafx.stage.StageStyle;
 
 
 public class Main extends Application {
@@ -69,42 +56,32 @@ public class Main extends Application {
 //        stage.show();
 //    }
 
-
+    private double x, y;
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("Customer.fxml"));
         primaryStage.setTitle("Checkout Management");
         primaryStage.setScene(new Scene(root));
+        primaryStage.initStyle(StageStyle.UNDECORATED);
+
+        //drag it here
+        root.setOnMousePressed(event -> {
+            x = event.getSceneX();
+            y = event.getSceneY();
+        });
+        root.setOnMouseDragged(event -> {
+
+            primaryStage.setX(event.getScreenX() - x);
+            primaryStage.setY(event.getScreenY() - y);
+
+        });
+        root.requestFocus();
         primaryStage.show();
     }
-    @Override
-    public void init() throws Exception {
-        super.init();
-        if(!DBSource.getConnection().open()) {
-            System.out.println("Cannot connect to the database..");
-            Platform.exit();
-        }
-    }
-
-//    @Override
-//    public void stop() throws Exception {
-//        super.stop();
-//        DBSource.getConnection().close();
-//    }
 
     public static void main(String[] args) {
 
         launch(args);
-        System.out.println("Testing....");
-        ShoppingCart cartccurrent = new ShoppingCart();
-//        cartccurrent.addtoCart(new Book("iOS in Practice","1617291269",72.083,"2013-11-01","Bear P. Cahill","Mobile Technology"));
-//        DBSource.getConnection().insertOrders(new Customer("5fbdc1865bd1221212312536e2",
-//                                                            "Jami Pittman",
-//                                                            24,
-//                                                            "jamipittman@sdccd.edu",
-//                                                            "+1 (840) 486-3880",
-//                                                            "782 Tilden Avenue, Ryderwood, Georgia, 140"),cartccurrent);
-//        ExecutorService excecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     }
 

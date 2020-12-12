@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<StackPane fx:id="stackPane" prefHeight="484.0" prefWidth="740.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main_fx.CustomerController">
+   <children>
+      <AnchorPane prefHeight="451.0" prefWidth="740.0" style="-fx-background-color: #303138;">
+         <children>
+            <JFXTextField fx:id="nameField" focusColor="#b4bfe1" focusTraversable="false" labelFloat="true" layoutX="305.0" layoutY="195.0" prefHeight="30.0" prefWidth="176.0" style="-fx-font-size: 14px; -fx-text-fill: #b4bfe1;" unFocusColor="#828080">
+               <font>
+                  <Font name="Consolas" size="14.0" />
+               </font>
+            </JFXTextField>
+            <JFXTextField fx:id="phoneField" focusColor="#b4bfe1" focusTraversable="false" labelFloat="true" layoutX="506.0" layoutY="195.0" prefHeight="30.0" prefWidth="148.0" style="-fx-font-size: 14px; -fx-text-fill: #b4bfe1;" unFocusColor="#828080">
+               <font>
+                  <Font name="Consolas" size="14.0" />
+               </font>
+            </JFXTextField>
+            <JFXTextField fx:id="emailField" focusColor="#b4bfe1" focusTraversable="false" labelFloat="true" layoutX="496.0" layoutY="321.0" prefHeight="30.0" prefWidth="208.0" style="-fx-font-size: 14px; -fx-text-fill: #b4bfe1;" unFocusColor="#828080">
+               <font>
+                  <Font name="Consolas" size="14.0" />
+               </font>
+            </JFXTextField>
+            <JFXTextField fx:id="adrsField" focusColor="#b4bfe1" focusTraversable="false" labelFloat="true" layoutX="61.0" layoutY="321.0" prefHeight="30.0" prefWidth="344.0" style="-fx-font-size: 14px; -fx-text-fill: #b4bfe1;" unFocusColor="#828080">
+               <font>
+                  <Font name="Consolas" size="14.0" />
+               </font>
+            </JFXTextField>
+            <Label layoutX="61.0" layoutY="151.0" prefHeight="33.0" prefWidth="191.0" style="-fx-text-fill: #beceff;" text="Customer ID">
+               <font>
+                  <Font name="Consolas" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="498.0" layoutY="277.0" prefHeight="33.0" prefWidth="164.0" style="-fx-text-fill: #beceff;" text="Email">
+               <font>
+                  <Font name="Consolas" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="61.0" layoutY="276.0" prefHeight="33.0" prefWidth="164.0" style="-fx-text-fill: #beceff;" text="Address">
+               <font>
+                  <Font name="Consolas" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="506.0" layoutY="151.0" prefHeight="33.0" prefWidth="164.0" style="-fx-text-fill: #beceff;" text="Phone" textFill="#beceff">
+               <font>
+                  <Font name="Consolas" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="305.0" layoutY="151.0" prefHeight="33.0" prefWidth="164.0" style="-fx-text-fill: #beceff;" text="Full Name">
+               <font>
+                  <Font name="Consolas" size="14.0" />
+               </font>
+            </Label>
+            <JFXTextField fx:id="idField" focusColor="#b4bfe1" focusTraversable="false" labelFloat="true" layoutX="61.0" layoutY="195.0" prefHeight="30.0" prefWidth="217.0" style="-fx-font-size: 14px; -fx-text-fill: #b4bfe1;" unFocusColor="#828080">
+               <font>
+                  <Font name="Consolas" size="14.0" />
+               </font>
+            </JFXTextField>
+            <JFXButton fx:id="prcdButton" buttonType="RAISED" focusTraversable="false" layoutX="513.0" layoutY="400.0" onAction="#proceedToCart" prefHeight="53.0" prefWidth="191.0" ripplerFill="#d2d8eb" style="-fx-background-color: #292C34;" text="Proceed to checkout" textFill="#b4bfe1">
+               <font>
+                  <Font name="Consolas" size="14.0" />
+               </font>
+            </JFXButton>
+            <JFXButton fx:id="rdButton" buttonType="RAISED" focusTraversable="false" layoutX="61.0" layoutY="396.0" onAction="#randomizeCustomer" prefHeight="30.0" prefWidth="96.0" ripplerFill="#d2d8eb" style="-fx-background-color: #292C34;" text="Randomize" textFill="#b4bfe1">
+               <font>
+                  <Font name="Consolas" size="14.0" />
+               </font>
+            </JFXButton>
+            <JFXTextField fx:id="ageField" focusColor="#b4bfe1" focusTraversable="false" labelFloat="true" layoutX="425.0" layoutY="321.0" prefHeight="30.0" prefWidth="44.0" style="-fx-font-size: 14px; -fx-text-fill: #b4bfe1;" unFocusColor="#828080">
+               <font>
+                  <Font name="Consolas" size="14.0" />
+               </font>
+            </JFXTextField>
+            <Label layoutX="431.0" layoutY="277.0" prefHeight="33.0" prefWidth="44.0" style="-fx-text-fill: #beceff;" text="Age">
+               <font>
+                  <Font name="Consolas" size="14.0" />
+               </font>
+            </Label>
+            <JFXButton fx:id="clrButton" buttonType="RAISED" focusTraversable="false" layoutX="170.0" layoutY="396.0" onAction="#clearFields" prefHeight="30.0" prefWidth="96.0" ripplerFill="#d2d8eb" style="-fx-background-color: #292C34;" text="Clear" textFill="#b4bfe1">
+               <font>
+                  <Font name="Consolas" size="14.0" />
+               </font>
+            </JFXButton>
+            <JFXButton fx:id="newButton" buttonType="RAISED" focusTraversable="false" layoutX="291.0" layoutY="396.0" onAction="#addNewCustomer" prefHeight="30.0" prefWidth="96.0" ripplerFill="#d2d8eb" style="-fx-background-color: #292C34;" text="Add New" textFill="#b4bfe1">
+               <font>
+                  <Font name="Consolas" size="14.0" />
+               </font>
+            </JFXButton>
+            <ImageView fitHeight="53.0" fitWidth="44.0" layoutX="65.0" layoutY="74.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/account-tie.png" />
+               </image>
+            </ImageView>
+            <Pane prefHeight="33.0" prefWidth="740.0" style="-fx-background-color: #1a1a28;">
+               <children>
+                  <ImageView blendMode="SRC_ATOP" fitHeight="30.0" fitWidth="29.0" layoutX="699.0" layoutY="2.0" onMouseClicked="#exit" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/close-thick-white.png" />
+                     </image>
+                  </ImageView>
+               </children></Pane>
+         </children>
+      </AnchorPane>
+   </children>
+</StackPane>

@@ -4,16 +4,18 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+import java.text.DecimalFormat;
+import java.util.Random;
+
 public class Book {
 
-    private final int INITIAL_QUANTITY = 1;
     private SimpleStringProperty title = new SimpleStringProperty("");
     private SimpleStringProperty isbn = new SimpleStringProperty("");
     private SimpleDoubleProperty price = new SimpleDoubleProperty();
     private SimpleStringProperty publishedDate = new SimpleStringProperty("");
     private SimpleStringProperty author = new SimpleStringProperty("");
     private SimpleStringProperty category = new SimpleStringProperty("");
-    private SimpleIntegerProperty quantity = new SimpleIntegerProperty(INITIAL_QUANTITY);
+    private SimpleIntegerProperty quantity = new SimpleIntegerProperty(new Random().nextInt(3)+1);
     public Book(){
 
     }
@@ -22,7 +24,7 @@ public class Book {
     public Book(String title, String isbn, Double price, String publishedDate, String author, String category) {
         this.title.set(title);
         this.isbn.set(isbn);
-        this.price.set(price);
+        this.price.set(Double.parseDouble(new DecimalFormat("#.##").format(price)));
         this.publishedDate.set(publishedDate);
         this.author.set(author);
         this.category.set(category);
@@ -58,7 +60,7 @@ public class Book {
     }
 
     public SimpleDoubleProperty priceProperty() {
-        return price;
+        return this.price;
     }
 
     public void setPrice(double price) {
