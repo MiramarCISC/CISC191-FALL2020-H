@@ -1,3 +1,8 @@
+.idea
+*.iml
+target
+dependency-reduced-pom.xml
+
 # Compiled class file
 *.class
 
@@ -6,6 +11,23 @@
 
 # BlueJ files
 *.ctxt
+
+# Eclipse files
+*.pydevproject
+.project
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.loadpath
+/.settings/
+/Roguelike/.settings/
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/

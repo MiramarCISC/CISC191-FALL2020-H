@@ -2,7 +2,7 @@
  * Contributors: Tu Hoang
  **/
 
-package db_model;
+package edu.sdccd.cisc191.h.db_model;
 
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;

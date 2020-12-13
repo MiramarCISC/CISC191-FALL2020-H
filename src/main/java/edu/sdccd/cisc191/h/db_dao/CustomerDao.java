@@ -2,9 +2,9 @@
  * Contributors: Tu Hoang
  * */
 
-package db_dao;
+package edu.sdccd.cisc191.h.db_dao;
 
-import db_model.Customer;
+import edu.sdccd.cisc191.h.db_model.Customer;
 
 import java.sql.SQLException;
 

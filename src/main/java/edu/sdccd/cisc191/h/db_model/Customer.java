@@ -1,7 +1,7 @@
 /*
  * Contributors: Tu Hoang
  **/
-package db_model;
+package edu.sdccd.cisc191.h.db_model;
 
 /*
  * This is the model class for CUSTOMER table.

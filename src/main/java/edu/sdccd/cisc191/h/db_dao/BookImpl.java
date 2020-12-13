@@ -3,9 +3,9 @@
  * */
 
 
-package db_dao;
-import db_model.Book;
-import db_source.H2Connection;
+package edu.sdccd.cisc191.h.db_dao;
+import edu.sdccd.cisc191.h.db_model.Book;
+import edu.sdccd.cisc191.h.db_source.H2Connection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

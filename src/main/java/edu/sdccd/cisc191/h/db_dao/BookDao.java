@@ -3,9 +3,9 @@
  * */
 
 
-package db_dao;
+package edu.sdccd.cisc191.h.db_dao;
 
-import db_model.Book;
+import edu.sdccd.cisc191.h.db_model.Book;
 
 import java.util.List;
 

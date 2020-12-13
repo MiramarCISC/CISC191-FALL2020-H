@@ -2,7 +2,7 @@
  * Contributors: Tu Hoang
  **/
 
-package db_source;
+package edu.sdccd.cisc191.h.db_source;
 import java.sql.*;
 
 /*
@@ -38,7 +38,7 @@ public class H2Connection {
         Statement stm = null;
         try {
             stm = con.createStatement();
-            stm.executeUpdate("RUNSCRIPT FROM './Resources/data.sql'");
+            stm.executeUpdate("RUNSCRIPT FROM './src/main/resources/data.sql'");
 
         }
         catch (SQLException e){

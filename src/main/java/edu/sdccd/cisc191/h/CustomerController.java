@@ -1,14 +1,12 @@
-/*
+package edu.sdccd.cisc191.h;/*
  * Contributors: Tu Hoang
  * */
 
 
-package main_fx;
-
 import com.jfoenix.controls.*;
-import db_dao.CustomerImpl;
-import db_model.Customer;
-import db_source.H2Connection;
+import edu.sdccd.cisc191.h.db_dao.*;
+import edu.sdccd.cisc191.h.db_model.*;
+import edu.sdccd.cisc191.h.db_source.H2Connection;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -97,7 +95,7 @@ public class CustomerController implements Initializable {
     void proceedToCart(ActionEvent event) {
         if (newCustomer != null) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("Cart.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Cart.fxml"));
                 Parent CartViewParent = loader.load();
                 CartController cartController = loader.getController();
 

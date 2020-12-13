@@ -2,10 +2,10 @@
 /*
  * Contributors: Tu Hoang
  * */
-package db_dao;
+package edu.sdccd.cisc191.h.db_dao;
 
-import db_model.Book;
-import db_source.H2Connection;
+import edu.sdccd.cisc191.h.db_model.Book;
+import edu.sdccd.cisc191.h.db_source.H2Connection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -1,17 +1,13 @@
-/*
+package edu.sdccd.cisc191.h;/*
  * Contributors: Tu Hoang
  * */
-package main_fx;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
-import db_dao.BookImpl;
-import db_dao.OrderHistoryImpl;
-import db_model.Book;
-import db_model.Customer;
-import db_model.ShoppingCart;
-import db_source.H2Connection;
+import edu.sdccd.cisc191.h.db_dao.*;
+import edu.sdccd.cisc191.h.db_model.*;
+import edu.sdccd.cisc191.h.db_source.H2Connection;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -95,8 +91,8 @@ public class CartController implements Initializable {
         quantity_column.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         author_column.setCellValueFactory(new PropertyValueFactory<>("author"));
         price_column.setCellValueFactory(new PropertyValueFactory<>("price"));
-        bColumn.setCellFactory(TableColumn -> new TableCell<>() {
-            final ImageView icon = new ImageView(new Image("file:src/images/trash-can-outline.png"));
+        bColumn.setCellFactory(TableColumn -> new TableCell<Book,String>() {
+            final ImageView icon = new ImageView(new Image(CartController.class.getResourceAsStream("/images/trash-can-outline.png")));
             final Button removeButton = new Button("",icon);
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -121,7 +117,7 @@ public class CartController implements Initializable {
                     removeButton.setPrefHeight(45.0);
                     removeButton.setPrefWidth(45.0);
                     removeButton.setGraphicTextGap(0);
-                    removeButton.getStylesheets().add("file:src/main_fx/style.css");
+                    removeButton.getStylesheets().add("file:src/main/resources/style.css");
                     //Set action for the removeButton
                     removeButton.setOnMouseClicked(event -> {
                         bookData.remove(this.getTableRow().getIndex());

@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<StackPane fx:id="stackPane" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main_fx.CartController">
+<StackPane fx:id="stackPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.sdccd.cisc191.h.CartController">
    <children>
       <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="713.0" prefWidth="1164.0" style="-fx-background-color: #303138;">
          <children>
@@ -112,14 +112,14 @@
             </JFXButton>
             <ImageView fitHeight="59.0" fitWidth="57.0" layoutX="41.0" layoutY="68.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../images/cart-outline.png" />
+                  <Image url="@images/cart-outline.png" />
                </image>
             </ImageView>
             <Pane layoutY="-2.0" prefHeight="33.0" prefWidth="1164.0" style="-fx-background-color: #1a1a28;">
                <children>
                   <ImageView blendMode="SRC_ATOP" fitHeight="30.0" fitWidth="29.0" layoutX="1128.0" layoutY="3.0" onMouseClicked="#exit" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../images/close-thick-white.png" />
+                        <Image url="@images/close-thick-white.png" />
                      </image>
                   </ImageView>
                </children>

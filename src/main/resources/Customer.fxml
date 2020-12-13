@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<StackPane fx:id="stackPane" prefHeight="484.0" prefWidth="740.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main_fx.CustomerController">
+<StackPane fx:id="stackPane" prefHeight="484.0" prefWidth="740.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.sdccd.cisc191.h.CustomerController">
    <children>
       <AnchorPane prefHeight="451.0" prefWidth="740.0" style="-fx-background-color: #303138;">
          <children>
@@ -98,14 +98,14 @@
             </JFXButton>
             <ImageView fitHeight="53.0" fitWidth="44.0" layoutX="65.0" layoutY="74.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../images/account-tie.png" />
+                  <Image url="@images/account-tie.png" />
                </image>
             </ImageView>
             <Pane prefHeight="33.0" prefWidth="740.0" style="-fx-background-color: #1a1a28;">
                <children>
                   <ImageView blendMode="SRC_ATOP" fitHeight="30.0" fitWidth="29.0" layoutX="699.0" layoutY="2.0" onMouseClicked="#exit" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../images/close-thick-white.png" />
+                        <Image url="@images/close-thick-white.png" />
                      </image>
                   </ImageView>
                </children></Pane>

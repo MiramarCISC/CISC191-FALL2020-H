@@ -1,8 +1,6 @@
-/*
+package edu.sdccd.cisc191.h;/*
 * Contributors: Tu Hoang
 * */
-
-package main_fx;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -11,14 +9,14 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-//Main class of the application
+//edu.sdccd.cisc191.h.Main class of the application
 
 public class Main extends Application {
 
     private double x, y;
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("Customer.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/Customer.fxml"));
         primaryStage.setTitle("Checkout Management");
         primaryStage.setScene(new Scene(root));
         primaryStage.initStyle(StageStyle.UNDECORATED);

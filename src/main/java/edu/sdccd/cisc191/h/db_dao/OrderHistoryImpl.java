@@ -2,11 +2,11 @@
  * Contributors: Tu Hoang
  * */
 
-package db_dao;
+package edu.sdccd.cisc191.h.db_dao;
 
-import db_model.Customer;
-import db_model.ShoppingCart;
-import db_source.H2Connection;
+import edu.sdccd.cisc191.h.db_model.Customer;
+import edu.sdccd.cisc191.h.db_model.ShoppingCart;
+import edu.sdccd.cisc191.h.db_source.H2Connection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
