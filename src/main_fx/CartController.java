@@ -1,3 +1,6 @@
+/*
+ * Contributors: Tu Hoang
+ * */
 package main_fx;
 
 import com.jfoenix.controls.JFXButton;
@@ -76,6 +79,13 @@ public class CartController implements Initializable {
 
     }
 
+    /*
+    * This method is to indicating how the columns of the table view will be populated using the properties of the
+    * Book model class by binding them to the observableList . For the last column far right, it is filled with
+    * a button called "removeButton". When fired, it will remove that particular row from the tableview which in turn
+    * removing the object from the observableList. Also, each time the button is fired, the info of the cart on the
+    * right will also automatically updated to match the cart info.
+    * */
     private void initData() {
         Label placeHolder = new Label("Cart is empty!");
         placeHolder.setStyle("-fx-text-fill: #beceff; -fx-font-size: 20px; -fx-font-family: Consolas");
@@ -95,15 +105,14 @@ public class CartController implements Initializable {
                     setText(null);
                     setGraphic(null);
                 } else {
+                    //Update the info of the cart
                     itemslbl.setText(bookData.stream().map(Book::getQuantity).reduce(0, Integer::sum).toString());
-
                     Double sumPrice = bookData.stream()
                             .map(book -> ((double)book.getQuantity()) * book.getPrice())
                             .reduce(0.0, Double::sum);
-
                     subtlbl.setText("$" + new DecimalFormat("#.##").format(sumPrice));
-
                     totallbl.setText("$" + new DecimalFormat("#.##").format(sumPrice * 1.075));
+
 
                     icon.setFitWidth(23);
                     icon.setFitHeight(23);
@@ -113,6 +122,7 @@ public class CartController implements Initializable {
                     removeButton.setPrefWidth(45.0);
                     removeButton.setGraphicTextGap(0);
                     removeButton.getStylesheets().add("file:src/main_fx/style.css");
+                    //Set action for the removeButton
                     removeButton.setOnMouseClicked(event -> {
                         bookData.remove(this.getTableRow().getIndex());
                         if (bookData.isEmpty()){
@@ -132,6 +142,17 @@ public class CartController implements Initializable {
         tbview.setItems(bookData);
     }
 
+    /*
+     * This method is executed when the "PAY" button the fired. If the cart is empty, it will pop up the error dialog.
+     * If not, the ShoppingCart object will populate its curCart variable by adding all items inside of the observableList.
+     * After that, it will run the method insertOrders() from OrderHistoryImpl class to the order info into the ORDERS table.
+     * Next, it will load the receipt dialog. Finally, modifying the stock numbers of each item in the cart by method
+     * changeStocks() from BookImpl class, and fire the "Remove All" button.
+     *
+     * Note here that the payment process is skipped because we have not implemented
+     * that in this application. So we assume that the transaction is successful.
+     * */
+
     @FXML
     public void pay(){
         if(bookData.isEmpty()){
@@ -144,13 +165,22 @@ public class CartController implements Initializable {
             clearButton.fire();
         }
     }
+
+    /*
+     * This method is executed when the "X" image at top-right corner is clicked. It will release the connection from
+     * the database and exit the application.
+     * */
+
     @FXML
     public void exit(){
-
+        H2Connection.close();
         System.exit(0);
     }
 
-
+    /*
+    * This method is executed when the "Scan" button is fired. It will add a random book from the BOOKS table into the
+    * shopping cart thorough observableList.
+    * */
 
     @FXML
     public void scanRandom(){
@@ -158,6 +188,11 @@ public class CartController implements Initializable {
             bookData.add(tempList.get(new Random().nextInt(207)));
         }
     }
+
+    /*
+     * This method is executed when the "Remove All" button is fired. It will remove all items inside the shopping cart
+     * as well as the info of the cart on the right side.
+     * */
     @FXML
     public void clearAll(){
         bookData.clear();
@@ -165,22 +200,33 @@ public class CartController implements Initializable {
         totallbl.setText("");
         subtlbl.setText("");
     }
-
+    /*
+     * This method is to retrieve the customer object from previous scene, CustomerScene. And then, displaying the
+     * customer's first name on the scene.
+     * */
     public void getCustomerInfo(Customer newCustomer) {
         curCustomer = newCustomer;
         welcomelbl.setText("Welcome, "+curCustomer.getcName().split(" ")[0]);
     }
+
+    /*
+     * Creating a custom dialog
+     * */
+
     void loadDialog(int i, String id){
 
         JFXDialog dialog = new JFXDialog(stackPane, dialogLayout, JFXDialog.DialogTransition.CENTER);
-
+        //Displayed when the cart is empty
         if( i == 0 ){
             body.setText("There is nothing in cart!");
         }
+        //Displayed as a receipt after the transaction
         if (i == 1){
             header.setText(getReceiptHeading(id));
             body.setText(getReceiptBody(itemslbl.getText(), subtlbl.getText(),totallbl.getText()));
         }
+
+        //Set action for "OK" button to close the dialog when clicked
         dlButton.setOnAction(e -> dialog.close());
         dialogLayout.setActions(dlButton);
         dialogLayout.setHeading(header);
@@ -189,9 +235,15 @@ public class CartController implements Initializable {
 
     }
 
+
+
+    /*
+     * This method is to return the custom body of the dialog
+     * */
     private String getReceiptBody(String itemsSold, String subTotal, String totalPrice) {
 
-        return String.format("%46s", "Date: " + curCart.getOrderedDate()) + String.format("%n**********************************************") +
+        return String.format("%46s", "Date: " + curCart.getOrderedDate()) +
+                    String.format("%n**********************************************") +
                     String.format("%n%46s", "#Items Sold: " + itemsSold) +
                     String.format("%n%46s", "Subtotal: " + subTotal) +
                     String.format("%n%46s", "Sale's Tax: 7.5%") +
@@ -202,7 +254,9 @@ public class CartController implements Initializable {
                     String.format("%n%46s", "Change due: $0.0") +
                     "\n";
     }
-
+    /*
+     * This method is to return the custom heading of the dialog
+     * */
     String getReceiptHeading(String orderId){
 
         return "\t\tBOOK STORE" + String.format("\n%26s", "ADDRESS: #") +

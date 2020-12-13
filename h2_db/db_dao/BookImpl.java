@@ -1,3 +1,8 @@
+/*
+ * Contributors: Tu Hoang
+ * */
+
+
 package db_dao;
 import db_model.Book;
 import db_source.H2Connection;
@@ -5,7 +10,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/*
+ * This is the DAO concrete class with the purpose of inserting order history into BOOKS table.
+ * */
 public class BookImpl implements BookDao {
     public static final String BOOKS_COLUMN_ISBN = "isbn";
     public static final String BOOKS_COLUMN_STOCK = "stock";
@@ -21,7 +28,10 @@ public class BookImpl implements BookDao {
     static Connection con = H2Connection.getConnection();
 
     private List<Book> bookList = new ArrayList<>();
-
+    /*
+     * This operation is to perform the select query that will retrieve all of the current books in the BOOKS table
+     * and save them onto the bookList for GUI's randomization purpose.
+     * */
 
     private boolean queryAllBooks() {
         Statement stm = null;
@@ -47,7 +57,9 @@ public class BookImpl implements BookDao {
             }
         }
     }
-
+    /*
+     * This method is to check if the query above actually works. When it does, returning the list of books.
+     * */
     public List<Book> getAllBooks() {
         if (queryAllBooks()) {
             return this.bookList;
@@ -55,6 +67,14 @@ public class BookImpl implements BookDao {
             return null;
 
     }
+
+
+
+    /*
+     * This a synchronized block that will perform the update operation towards the BOOKS table by executing the
+     * update query through the PreparedStatement updateBookStocks. It will basically reduce
+     * the stock number by the purchased amount, which is the input as list of items from the shopping cart.
+     * */
 
     @Override
     public void changeStocks(List<Book> bookList) {
@@ -74,8 +94,9 @@ public class BookImpl implements BookDao {
 
             });
         }
+        //For testing purpose
         System.out.println("Done changing stocks!");
-        System.out.println("Disconnecting the server!");
-        H2Connection.close();
+
+
     }
 }

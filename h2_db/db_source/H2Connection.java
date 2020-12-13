@@ -1,41 +1,26 @@
+/*
+ * Contributors: Tu Hoang
+ **/
+
 package db_source;
-
-import db_model.Book;
-import db_model.Customer;
-import db_model.ShoppingCart;
-
 import java.sql.*;
-import java.util.*;
 
+/*
+ * This is database connection class
+ **/
 
 public class H2Connection {
     public static final String URL = "jdbc:h2:file:./BooksDB";
-//    public static final String BOOKS_TABLE = "BOOKS";
-
-    public static final String ORDERS_COLUMN_CUSTOMERID ="customerid";
-    public static final String ORDERS_COLUMN_ORDERID = "orderid";
-    public static final String ORDERS_COLUMN_DATE ="orderdate";
-
-    public static final String CUSTOMER_COLUMN_NAME ="name";
-    public static final String CUSTOMER_COLUMN_AGE = "age";
-    public static final String CUSTOMER_COLUMN_EMAIL = "email";
-    public static final String CUSTOMER_COLUMN_PHONE = "phone";
-    public static final String CUSTOMER_COLUMN_ADDRESS = "address";
-
-
-
-
-
-
-
     /*
-        Creating the singleton instance
-    */
+    *  Creating the singleton instance
+    **/
     private static Connection con = null;
+    //Get the instance
     public static Connection getConnection() {
         return con;
     }
     private H2Connection(){}
+    //Static constructor
     static {
         try {
             Class.forName("org.h2.Driver");
@@ -46,15 +31,14 @@ public class H2Connection {
 
         }
     }
-    /*****************************************************************************************/
 
 
-
+    //Run the script to load the data and fill tables up before hand.
     private static void preload(){
         Statement stm = null;
         try {
             stm = con.createStatement();
-            stm.executeUpdate("RUNSCRIPT FROM './Resources/preload.sql'");
+            stm.executeUpdate("RUNSCRIPT FROM './Resources/data.sql'");
 
         }
         catch (SQLException e){
@@ -70,7 +54,7 @@ public class H2Connection {
         }
     }
 
-
+    //Shut down the connection.
     public static void close(){
         try{
             if(con!=null){

@@ -1,11 +1,18 @@
+/*
+ * Contributors: Tu Hoang
+ **/
+
 package db_model;
 
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-
 import java.text.DecimalFormat;
 import java.util.Random;
+
+/*
+ * This is the model class for BOOKS table.
+ **/
 
 public class Book {
 
@@ -16,11 +23,8 @@ public class Book {
     private SimpleStringProperty author = new SimpleStringProperty("");
     private SimpleStringProperty category = new SimpleStringProperty("");
     private SimpleIntegerProperty quantity = new SimpleIntegerProperty(new Random().nextInt(3)+1);
-    public Book(){
 
-    }
-
-
+    //Constructor
     public Book(String title, String isbn, Double price, String publishedDate, String author, String category) {
         this.title.set(title);
         this.isbn.set(isbn);
@@ -30,6 +34,8 @@ public class Book {
         this.category.set(category);
     }
 
+
+    //Setters and getters
 
     public String getTitle() {
         return title.get();

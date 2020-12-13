@@ -1,4 +1,12 @@
+/*
+ * Contributors: Tu Hoang
+ **/
 package db_model;
+
+/*
+ * This is the model class for CUSTOMER table.
+ **/
+
 
 public class Customer {
     private String cId;
@@ -7,7 +15,7 @@ public class Customer {
     private String cEmail;
     private String cPhone;
     private String cAddress;
-
+    //Constructor
     public Customer(String cId, String cName, int cAge, String cEmail, String cPhone, String cAddress) {
         this.cId = cId;
         this.cName = cName;
@@ -16,7 +24,7 @@ public class Customer {
         this.cPhone = cPhone;
         this.cAddress = cAddress;
     }
-
+    //Setters and getters
     public String getcId() {
         return cId;
     }

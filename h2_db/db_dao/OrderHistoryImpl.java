@@ -1,3 +1,7 @@
+/*
+ * Contributors: Tu Hoang
+ * */
+
 package db_dao;
 
 import db_model.Customer;
@@ -9,11 +13,25 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.UUID;
 
+/*
+ * This is the DAO concrete class with the purpose of inserting order history into ORDERS table.
+ * */
+
 public class OrderHistoryImpl implements OrderHistoryDao{
     static Connection con = H2Connection.getConnection();
     public static final String INSERT_ORDERS = "INSERT INTO ORDERS VALUES (?,?,?)";
     private PreparedStatement insertIntoOrders;
     private OrderedItemsImpl orderedItemsImpl = new OrderedItemsImpl();
+
+    /*
+     * This operation will first turn off auto-commit, and generate new Id for the order.
+     * After that, it will execute the update query through the PreparedStatement insertIntoOrders with values as the order id,
+     * the customer id, and the date. The order id and customer id pair is unique.
+     * Next, if everything goes well, it will then call the operation insertOrderedItems from OrderedItemsImpl DAO concrete class.
+     * Then, if it is successfully inserted, the operation will commit the changes towards the database.
+     * Finally, it will return the auto-commit back to 'ON', which means true.
+     * If exceptions occur, it will call the rollback method to make sure no changes have been actually made.
+     * */
 
     public String insertOrders(Customer customer, ShoppingCart cart){
         try {
