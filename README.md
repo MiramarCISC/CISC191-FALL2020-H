@@ -1,5 +1,5 @@
-# CISC191-FALL2020-H
-Intermediate Java Programming
+# CISC191-FALL2020-H  
+Intermediate Java Programming  
 ##Prerequisites  
 JDK8  
 Maven  
