@@ -1,5 +1,6 @@
-.idea
-*.iml
+#TODO readd intellij gitignores after deleting them
+#.idea
+#*.iml
 target
 dependency-reduced-pom.xml
 *.db
