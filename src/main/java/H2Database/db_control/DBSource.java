@@ -5,6 +5,7 @@ import H2Database.db_model.ShoppingCart;
 import H2Database.functionality.Logging;
 
 import java.sql.*;
+import java.text.ParseException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
@@ -21,10 +22,10 @@ public class DBSource {
 //    public static final String ORDERITEMS_COLUMN_PRICE = "price";
 //    public static final String CUSTOMER_COLUMN_EMAIL = "email";
 //    public static final String CUSTOMER_COLUMN_PHONE = "phone";
+//    public static final String BOOK_COLUMN_STOCK = "stock";
 
     public static final String URL = "jdbc:h2:~/test;";
     public static final String CUSTOMER_COLUMN_CUSTOMERID = "customer_id";
-    public static final String BOOK_COLUMN_STOCK = "stock";
     public static final String BOOK_COLUMN_TITLE = "title";
     public static final String BOOK_COLUMN_ISBN = "isbn";
 
@@ -34,7 +35,9 @@ public class DBSource {
     public static final String INSERT_CUSTOMER = "INSERT INTO CISC191.CUSTOMERS VALUES (?,?,?,?,?,?)";
     public static final String INSERT_ORDERS = "INSERT INTO CISC191.ORDERS VALUES (?,?,?)";
     public static final String INSERT_ORDER_ITEMS = "INSERT INTO CISC191.ORDER_ITEMS VALUES (?,?,?)";
-    public static final String UPDATE_BOOKS_STOCK = "UPDATE CISC191.BOOKS SET " + BOOK_COLUMN_STOCK + " = ? WHERE " + BOOK_COLUMN_ISBN + " = ?";
+    public static final String UPDATE_STOCK =
+            "SET @book_stock = (SELECT stock FROM CISC191.books WHERE isbn = ?);\n" +
+                    "UPDATE CISC191.books SET stock = @book_stock-? WHERE isbn = ?;\n";
     public static final String QUERY_CUSTOMER_ORDER =
             "SELECT \n" +
                     "    o.order_id,\n" +
@@ -54,13 +57,14 @@ public class DBSource {
     private PreparedStatement insertIntoOrderItems;
     private PreparedStatement insertIntoCustomer;
     private PreparedStatement insertIntoOrders;
+    private PreparedStatement updateStock;
 
     public static DBSource getConnection() {
         return new DBSource();
     }
 
 
-    private static Connection open() {
+    public static Connection open() {
         Connection connection;
         try {
             Class.forName("org.h2.Driver");
@@ -91,10 +95,10 @@ public class DBSource {
             Statement statement = connection.createStatement();
             logger.info("Connected");
             statement.executeUpdate("RUNSCRIPT FROM '" + preloadPath + "'");
-            logger.info("Built");
+            logger.info("Built From Preload Successfully");
 
         } catch (SQLException e) {
-            logger.severe("Preload Databse Failed: " + e.getMessage());
+            logger.severe("Preload Database Failed: " + e.getMessage());
         }
     }
 
@@ -117,13 +121,11 @@ public class DBSource {
         Connection connection = DBSource.open();
         insertIntoCustomer = connection.prepareStatement(INSERT_CUSTOMER);
         String beautifiedPhone;
-
         try {
             beautifiedPhone = beatifyPhone(phone);
         } catch (StringIndexOutOfBoundsException exception) {
             beautifiedPhone = "";
         }
-
         int modifiedRows;
         String newcustomerId = generateRandomID();
         insertIntoCustomer.setString(1, newcustomerId);
@@ -148,19 +150,24 @@ public class DBSource {
         String isbn;
         Map.Entry<Book, Integer> bookEntry;
         insertIntoOrderItems = connection.prepareStatement(INSERT_ORDER_ITEMS);
+        updateStock = connection.prepareStatement(UPDATE_STOCK);
 
         while (itr.hasNext()) {
             bookEntry = itr.next();
             quantity = bookEntry.getValue();
             isbn = bookEntry.getKey().getIsbn();
 
-            updateStock(isbn, quantity, connection);
+            updateStock.setString(1,isbn);
+            updateStock.setInt(2,quantity);
+            updateStock.setString(3,isbn);
 
             insertIntoOrderItems.setString(1, orderId);
             insertIntoOrderItems.setString(2, isbn);
             insertIntoOrderItems.setInt(3, quantity);
 
+            updateStock.executeUpdate();
             modifiedRows = insertIntoOrderItems.executeUpdate();
+
             if (modifiedRows != 1) {
                 throw new SQLException("Insert Into ORDER_ITEMS Failed!!!");
             }
@@ -168,7 +175,7 @@ public class DBSource {
 
     }
 
-    public void insertOrders(String customerID, ShoppingCart cart) {
+    public void insertOrders(String customerID, ShoppingCart cart) throws SQLException {
         Connection connection = DBSource.open();
 
         try {
@@ -178,7 +185,7 @@ public class DBSource {
             String newOrderId = generateRandomID();
             insertIntoOrders.setString(1, newOrderId);
             insertIntoOrders.setString(2, validateCustomer(customerID, connection));
-            insertIntoOrders.setDate(3, (Date) cart.getOrderedDate());
+            insertIntoOrders.setDate(3, new Date(System.currentTimeMillis()));
 
             int modifiedRows = insertIntoOrders.executeUpdate();
             if (modifiedRows == 1) {
@@ -198,6 +205,7 @@ public class DBSource {
             } catch (SQLException e2) {
                 logger.severe("Roll back Failed: " + e2.getMessage());
             }
+            throw e;
         } finally {
             try {
                 logger.info("Resetting auto-commit...");
@@ -210,20 +218,6 @@ public class DBSource {
 
 
     }
-
-    public void updateStock(String isbn, int requestedStock, Connection connection) throws SQLException {
-        ResultSet resultSet = queryINFO(QUERY_BOOKS_ISBN, isbn);
-        resultSet.next();
-        int availableStock = resultSet.getInt(BOOK_COLUMN_STOCK);
-        PreparedStatement updateBookStock = connection.prepareStatement(UPDATE_BOOKS_STOCK);
-
-        updateBookStock.setInt(1, availableStock - requestedStock);
-        updateBookStock.setString(2, isbn);
-        if (updateBookStock.executeUpdate() != 1)
-            throw new SQLException("Updated Stock Failed!!!");
-
-    }
-
 
     private ResultSet queryINFO(String query, String key) {
         Connection connection = DBSource.open();
@@ -256,23 +250,5 @@ public class DBSource {
     private String beatifyPhone(String phone) {
         return "+1 " + "(" + phone.substring(0, 3) + ") " + phone.substring(3, 6) + "-" + phone.substring(6);
     }
-
-//    private int getRowCount(ResultSet resultSet) {
-//        if (resultSet == null)
-//            return 0;
-//        try {
-//            resultSet.last();
-//            return resultSet.getRow();
-//        } catch (SQLException sqlException) {
-//            logger.severe(sqlException.getMessage());
-//        } finally {
-//            try {
-//                resultSet.beforeFirst();
-//            } catch (SQLException sqlException) {
-//                logger.severe(sqlException.getMessage());
-//            }
-//        }
-//        return 0;
-//    }
 
 }

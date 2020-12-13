@@ -6,7 +6,7 @@ CREATE TABLE CISC191.books (
 	isbn VARCHAR(70),
 	title VARCHAR(200) NOT NULL,
 	price DOUBLE,
-	stock INT CHECK (stock >= 0),
+	stock INT NOT NULL CHECK (stock >= 0),
 	publishedDate DATE,
 	author VARCHAR(500),
 	category VARCHAR(500),
@@ -364,3 +364,6 @@ INSERT INTO CISC191.order_items VALUES ('c580b2912870','193239415X','2');
 INSERT INTO CISC191.order_items VALUES ('fedb1fc5314e','1933988673','3');
 INSERT INTO CISC191.order_items VALUES ('fedb1fc5314e','1935182234','1');
 INSERT INTO CISC191.order_items VALUES ('1d85dea84a53','1935182234','4');
+
+
+

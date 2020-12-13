@@ -6,6 +6,7 @@ public class Book {
     private String isbn;
     private String title;
     private Double price;
+
     private Integer stock;
     private String publishedDate;
     private String author;
@@ -19,6 +20,11 @@ public class Book {
         this.publishedDate = publishedDate;
         this.author = author;
         this.category = category;
+    }
+
+
+    public Integer getStock() {
+        return stock;
     }
 
     public String getIsbn() {

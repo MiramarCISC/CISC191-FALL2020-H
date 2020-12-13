@@ -5,7 +5,12 @@ import FX.fx_model.PurchaseHistory;
 import H2Database.db_control.DBSource;
 import H2Database.db_model.Book;
 import H2Database.db_model.ShoppingCart;
+
+import H2Database.functionality.IllegalQuantityException;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -27,22 +32,21 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.IntStream;
 
 public class MainController implements Initializable {
-    private static StringProperty deletedItem = new SimpleStringProperty();
-
-    private static DBSource dbSource;
-
     @FXML
     private Label labelHistory;
     @FXML
     private Label addBookMS;
     @FXML
     private Label mainText;
+    @FXML
+    private Label totalMS;
     @FXML
     private Button checkout;
     @FXML
@@ -52,7 +56,11 @@ public class MainController implements Initializable {
     @FXML
     private Button newCustomer;
     @FXML
+    private Button processOrder;
+    @FXML
     private TextField textHistory;
+    @FXML
+    private TextField validateCustomer;
     @FXML
     private TextField searchBook;
     @FXML
@@ -71,8 +79,17 @@ public class MainController implements Initializable {
     private GridPane checkOutPane;
     @FXML
     private GridPane purchasesPane;
+    private static StringProperty deletedItem = new SimpleStringProperty();
+    private static StringProperty bookName = new SimpleStringProperty();
+    private static StringProperty bookISBN = new SimpleStringProperty();
+    private static StringProperty newCustomerID = new SimpleStringProperty();
+    private static IntegerProperty more = new SimpleIntegerProperty();
+    private static DecimalFormat decimalFormat = new DecimalFormat("0.000");
+    private static DBSource dbSource;
+
     private ShoppingCart shoppingCart = new ShoppingCart();
     private ObservableList observableList = FXCollections.observableArrayList();
+    private Alert alert;
 
     public static DBSource getDbSource() {
         return dbSource;
@@ -80,6 +97,22 @@ public class MainController implements Initializable {
 
     public static StringProperty deletedItemProperty() {
         return deletedItem;
+    }
+
+    public static StringProperty bookNameProperty() {
+        return bookName;
+    }
+
+    public static StringProperty bookISBNProperty() {
+        return bookISBN;
+    }
+
+    public static StringProperty newCustomerIDProperty() {
+        return newCustomerID;
+    }
+
+    public static IntegerProperty moreProperty() {
+        return more;
     }
 
     @Override
@@ -90,6 +123,26 @@ public class MainController implements Initializable {
         listView.setCellFactory(new ItemCellFactory());
 
         deletedItem.addListener((observableValue, oldValue, newValue) -> deleteBook(newValue));
+
+        newCustomerID.addListener((observableValue, oldValue, newValue) -> validateCustomer.setText(newValue));
+
+        more.addListener((observableValue, oldValue, newValue) -> {
+            try {
+                addBookMS.setText("");
+                shoppingCart.updateCartUsingISBN(bookISBN.get(), newValue.intValue());
+                totalMS.setText("Total: $" + decimalFormat.format(shoppingCart.cartTotal()));
+            } catch (IllegalQuantityException e) {
+                try {
+                    shoppingCart.updateCartUsingISBN(bookISBN.get(), oldValue.intValue());
+                    errorInsufficientStock("The requested book is out of stock", "Insufficient Stock");
+                } catch (IllegalQuantityException illegalQuantityException) {
+                }
+            }
+        });
+
+        processOrder.setDisable(true);
+        BooleanBinding booleanBind = validateCustomer.textProperty().isEmpty();
+        processOrder.disableProperty().bind(booleanBind);
     }
 
     @FXML
@@ -172,62 +225,108 @@ public class MainController implements Initializable {
 
     @FXML
     public void processOrder(ActionEvent event) {
-        int selected = listView.getSelectionModel().getSelectedIndex();
-        System.out.println(selected);
-        listView.getItems().remove(selected);
+        try {
+            dbSource.insertOrders(validateCustomer.getText().trim(), shoppingCart);
+            alert = new Alert(Alert.AlertType.INFORMATION);
+            setStyleAlert(alert);
+            alert.setTitle("Process Order");
+            alert.setContentText("Order Processed Successfully\n");
+            alert.showAndWait();
+            validateCustomer.clear();
+            totalMS.setText("");
+            listView.getItems().clear();
+        } catch (SQLException sqlException) {
+            errorInsufficientStock("Invalid ID","Invalid ID");
+        }
     }
 
     private void addBook(ShoppingCart cart, String info) {
+        addBookMS.setText("");
         String bookInfo = info.trim();
+        boolean noMatching = false;
         if (!cart.isInCart(bookInfo)) {
-            Map.Entry entry;
+            Map.Entry entry = null;
             if (!bookInfo.contains(" ")) {
-                cart.addToCartUsingISBN(bookInfo);
-                entry = cart.getCurCart().entrySet().stream()
-                        .filter(e -> e.getKey().getIsbn().equals(bookInfo))
-                        .findFirst()
-                        .orElse(null);
+                try {
+                    cart.addToCartUsingISBN(bookInfo);
+                    entry = cart.getCurCart().entrySet().stream()
+                            .filter(e -> e.getKey().getIsbn().equals(bookInfo))
+                            .findFirst()
+                            .orElse(null);
+                    noMatching = true;
+                } catch (IllegalQuantityException e) {
+                    errorInsufficientStock("The requested book is out of stock", "Insufficient Stock");
+                }
             } else {
-                cart.addToCartUsingTitle(bookInfo);
-                entry = cart.getCurCart().entrySet().stream()
-                        .filter(e -> e.getKey().getTitle().equals(bookInfo))
-                        .findFirst()
-                        .orElse(null);
+                try {
+                    cart.addToCartUsingTitle(bookInfo);
+                    entry = cart.getCurCart().entrySet().stream()
+                            .filter(e -> e.getKey().getTitle().equals(bookInfo))
+                            .findFirst()
+                            .orElse(null);
+                    noMatching = true;
+                } catch (IllegalQuantityException e) {
+                    errorInsufficientStock("The requested book is out of stock", "Insufficient Stock");
+                }
             }
 
-            if (entry != null)
+            if (entry != null) {
                 listView.getItems().add(entry);
-            else
-                addBookMS.setText("No Book Found");
+                totalMS.setText("Total: $" + decimalFormat.format(shoppingCart.cartTotal()));
+            } else {
+                if (noMatching) addBookMS.setText("*No Book Found");
+            }
         }
     }
-    
+
     private void deleteBook(String value) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Deleting Book");
-        String[] strings = value.split(",");
-        String title = strings[0];
-        String isbn = strings[1];
-        alert.setContentText("Delete " + title + " ?");
-        Optional<ButtonType> answer = alert.showAndWait();
-        ObservableList<Map.Entry<Book, Integer>> items = listView.getItems();
-        if (answer.get() == ButtonType.OK) {
-            shoppingCart.removeFromCart(new Book(isbn));
-            int selectedIndex = IntStream
-                    .range(0, items.size())
-                    .filter(i -> items.get(i).getKey().getIsbn().equals(isbn))
-                    .findFirst()
-                    .orElse(-1);
-            listView.getItems().remove(selectedIndex);
-        } else {
+        try {
+            alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Deleting Book");
+            String[] strings = value.split(",");
+            String title = strings[0];
+            String isbn = strings[1];
+            alert.setContentText("Delete " + title + " ?");
+            setStyleAlert(alert);
+
+            Optional<ButtonType> answer = alert.showAndWait();
+
+            ObservableList<Map.Entry<Book, Integer>> items = listView.getItems();
+
+            if (answer.get() == ButtonType.OK) {
+                shoppingCart.removeFromCart(new Book(isbn));
+                int selectedIndex = IntStream
+                        .range(0, items.size())
+                        .filter(i -> items.get(i).getKey().getIsbn().equals(isbn))
+                        .findFirst()
+                        .orElse(-1);
+                listView.getItems().remove(selectedIndex);
+            }
             deletedItem.unbind();
             deletedItem.setValue("");
-            //Reference: https://github.com/afsalashyana/Library-Assistant/blob/master/src/library/assistant/alert/AlertMaker.java
-            alert.setTitle("Deletion Canceled");
-            alert.setHeaderText(null);
-            alert.setContentText("DELETION PROCESS CANCELED!");
-            alert.showAndWait();
+            addBookMS.setText("");
+            if (shoppingCart.getCurCart().isEmpty()) totalMS.setText("");
+            else totalMS.setText("Total: $" + decimalFormat.format(shoppingCart.cartTotal()));
+
+        } catch (ArrayIndexOutOfBoundsException exception) {
         }
+    }
+
+    private void setStyleAlert(Alert alert) {
+        alert.getDialogPane()
+                .getStylesheets()
+                .add(MainController.class.getResource("/style.css").toExternalForm());
+        alert.getDialogPane()
+                .getStyleClass()
+                .add("style");
+    }
+
+    private void errorInsufficientStock(String message, String title) {
+        alert = new Alert(Alert.AlertType.ERROR);
+        setStyleAlert(alert);
+        alert.setTitle(title);
+        alert.setContentText(message);
+        alert.show();
     }
 }
 //    private void buildCustomList() {

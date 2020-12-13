@@ -2,6 +2,8 @@ package FX.fx_model;
 
 import FX.mainFX.MainController;
 import H2Database.db_model.Book;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
@@ -16,25 +18,25 @@ import java.util.Map;
 
 public class Item extends ListCell<Map.Entry<Book, Integer>> {
 
-    private StringProperty bookName = new SimpleStringProperty();
+    private static StringProperty bookName = new SimpleStringProperty();
+    private static IntegerProperty bookQuantity = new SimpleIntegerProperty();
 
     @FXML
-    private Label titleTF;
-
+    private Label titleLB;
     @FXML
-    private Label authorTF;
-
+    private Label authorLB;
     @FXML
-    private Label quantityTF;
-
+    private Label quantityLB;
     @FXML
-    private Label priceTF;
-
+    private Label priceLB;
     @FXML
     private HBox hBox;
-
     @FXML
     private Button deleteBTN;
+    @FXML
+    private Button moreBtn;
+    @FXML
+    private Button lessBtn;
 
     public Item() {
         loadFXML();
@@ -54,7 +56,7 @@ public class Item extends ListCell<Map.Entry<Book, Integer>> {
     @Override
     protected void updateItem(Map.Entry<Book, Integer> item, boolean empty) {
         super.updateItem(item, empty);
-        if (empty||item==null) {
+        if (empty || item == null) {
             setText(null);
             setGraphic(null);
         } else {
@@ -71,16 +73,31 @@ public class Item extends ListCell<Map.Entry<Book, Integer>> {
                 quantity = "Quantity: " + String.valueOf(item.getValue());
                 price = "Price: $" + String.valueOf(item.getKey().getPrice());
             }
-            titleTF.setText(title);
-            authorTF.setText(author);
-            quantityTF.setText(quantity);
-            priceTF.setText(price);
+            titleLB.setText(title);
+            authorLB.setText(author);
+            quantityLB.setText(quantity);
+            priceLB.setText(price);
 
             setText(null);
             setGraphic(hBox);
-            deleteBTN.setOnMouseClicked(event -> {
-                bookName.setValue(item.getKey().getTitle()+","+item.getKey().getIsbn());
+
+            deleteBTN.setOnMouseClicked(mouseEvent -> {
+                bookName.setValue(item.getKey().getTitle() + "," + item.getKey().getIsbn());
                 MainController.deletedItemProperty().bind(bookName);
+            });
+
+            moreBtn.setOnMouseClicked(mouseEvent -> {
+                MainController.bookISBNProperty().bind(new SimpleStringProperty(item.getKey().getIsbn()));
+                MainController.moreProperty().bind(new SimpleIntegerProperty(item.getValue() + 1));
+                quantityLB.setText("Quantity: " + String.valueOf(item.getValue()));
+            });
+            lessBtn.setOnMouseClicked(mouseEvent -> {
+                MainController.bookISBNProperty().bind(new SimpleStringProperty(item.getKey().getIsbn()));
+                if ((item.getValue() - 1) <= 0)
+                    MainController.moreProperty().bind(new SimpleIntegerProperty(1));
+                else
+                    MainController.moreProperty().bind(new SimpleIntegerProperty(item.getValue() - 1));
+                quantityLB.setText("Quantity: " + String.valueOf(item.getValue()));
             });
         }
     }

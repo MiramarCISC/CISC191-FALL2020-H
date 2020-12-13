@@ -2,11 +2,17 @@ package H2Database.db_model;
 
 
 import H2Database.db_control.DBSource;
+import H2Database.functionality.IllegalQuantityException;
+
+import java.lang.IllegalArgumentException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class ShoppingCart {
@@ -14,11 +20,11 @@ public class ShoppingCart {
     Map<Book, Integer> curCart = new HashMap<>();
     Date orderedDate;
 
-    public void addToCartUsingISBN(String isbn) {
+    public void addToCartUsingISBN(String isbn) throws  IllegalQuantityException {
         updateCartUsingISBN(isbn, INITIAL_QUANTITY);
     }
 
-    public void addToCartUsingTitle(String title) {
+    public void addToCartUsingTitle(String title) throws IllegalQuantityException {
         updateCartUsingTitle(title, INITIAL_QUANTITY);
     }
 
@@ -30,17 +36,29 @@ public class ShoppingCart {
         return curCart;
     }
 
-    public Date getOrderedDate() {
-        return orderedDate;
+    public Date getOrderedDate() throws ParseException {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        return format.parse(format.format(new Date(System.currentTimeMillis())));
     }
 
     public boolean isInCart(String isbnOrTitle) {
         return isInCartISBN(isbnOrTitle) || isInCartTitle(isbnOrTitle);
     }
 
-    protected void updateCartUsingISBN(String isbn, int newQuantity) {
+    public double cartTotal(){
+        Iterator<Map.Entry<Book, Integer>> itr = curCart.entrySet().iterator();
+        Map.Entry<Book,Integer> bookEntry;
+        double total = 0;
+        while (itr.hasNext()){
+            bookEntry = itr.next();
+            total+= bookEntry.getValue()*bookEntry.getKey().getPrice();
+        }
+        return total;
+    }
+
+    public void updateCartUsingISBN(String isbn, int newQuantity) throws IllegalQuantityException {
         Book book;
-        try(ResultSet bookResult = DBSource.getConnection().getBookInfoByISBN(isbn)) {
+        try (ResultSet bookResult = DBSource.getConnection().getBookInfoByISBN(isbn)) {
             bookResult.next();
             book = new Book(
                     bookResult.getString("isbn"),
@@ -51,15 +69,18 @@ public class ShoppingCart {
                     bookResult.getString("author"),
                     bookResult.getString("category")
             );
-            updateCart(book, newQuantity);
+            if (book.getStock()<newQuantity||newQuantity<=0)
+                throw new IllegalQuantityException("Insufficient Stock");
+            else
+                updateCart(book, newQuantity);
         } catch (SQLException sqlException) {
             book = null;
         }
     }
 
-    protected void updateCartUsingTitle(String title, int newQuantity) {
+    public void updateCartUsingTitle(String title, int newQuantity) throws IllegalQuantityException {
         Book book;
-        try(ResultSet bookResult = DBSource.getConnection().getBookInfoByTitle(title)) {
+        try (ResultSet bookResult = DBSource.getConnection().getBookInfoByTitle(title)) {
             bookResult.next();
             book = new Book(
                     bookResult.getString("isbn"),
@@ -70,7 +91,10 @@ public class ShoppingCart {
                     bookResult.getString("author"),
                     bookResult.getString("category")
             );
-            updateCart(book, newQuantity);
+            if (book.getStock()<newQuantity||newQuantity<=0)
+                throw new IllegalQuantityException("Insufficient Stock");
+            else
+                updateCart(book, newQuantity);
         } catch (SQLException sqlException) {
             book = null;
         }

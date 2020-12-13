@@ -16,7 +16,7 @@
          <children>
             <VBox alignment="CENTER_LEFT" prefHeight="170.0" prefWidth="554.0" spacing="10.0">
                <children>
-                  <Label fx:id="titleTF" graphicTextGap="6.0" text="Title" textFill="WHITE">
+                  <Label fx:id="titleLB" graphicTextGap="6.0" text="Title" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="25.0" />
                      </font>
@@ -24,13 +24,13 @@
                         <Insets left="20.0" />
                      </padding>
                      <graphic>
-                        <FontAwesomeIcon fill="WHITE" glyphName="BOOK" size="1.5em" />
+                        <FontAwesomeIcon fill="WHITE" glyphName="BOOK" />
                      </graphic>
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
                   </Label>
-                  <Label fx:id="authorTF" layoutX="68.0" layoutY="83.0" text="Author: " textFill="WHITE">
+                  <Label fx:id="authorLB" layoutX="68.0" layoutY="83.0" text="Author: " textFill="WHITE">
                      <padding>
                         <Insets left="20.0" />
                      </padding>
@@ -38,7 +38,7 @@
                         <Font size="17.0" />
                      </font>
                   </Label>
-                  <Label fx:id="quantityTF" layoutX="68.0" layoutY="94.0" text="Quantity:" textFill="WHITE">
+                  <Label fx:id="quantityLB" layoutX="68.0" layoutY="94.0" text="Quantity:" textFill="WHITE">
                      <padding>
                         <Insets left="20.0" />
                      </padding>
@@ -46,7 +46,7 @@
                         <Font size="17.0" />
                      </font>
                   </Label>
-                  <Label fx:id="priceTF" layoutX="68.0" layoutY="104.0" text="Price:" textFill="WHITE">
+                  <Label fx:id="priceLB" layoutX="68.0" layoutY="104.0" text="Price:" textFill="WHITE">
                      <padding>
                         <Insets left="20.0" />
                      </padding>
@@ -58,17 +58,17 @@
             </VBox>
             <HBox alignment="CENTER" prefHeight="167.0" prefWidth="250.0" spacing="11.0">
                <children>
-                  <Button mnemonicParsing="false" style="-fx-background-color: white; -fx-background-radius: 5EM; -fx-border-color: BLACK; -fx-border-radius: 5EM; -fx-border-width: .0.1;" text="MORE">
+                  <Button fx:id="moreBtn" mnemonicParsing="false" style="-fx-background-color: #32373B; -fx-background-radius: 5EM; -fx-border-color: BLACK; -fx-border-radius: 5EM; -fx-border-width: .0.1;" stylesheets="@style.css" text="MORE">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Button>
-                  <Button layoutX="72.0" layoutY="81.0" mnemonicParsing="false" style="-fx-background-color: white; -fx-background-radius: 5EM; -fx-border-color: BLACK; -fx-border-radius: 5EM; -fx-border-width: .0.1;" text="LESS">
+                  <Button fx:id="lessBtn" layoutX="72.0" layoutY="81.0" mnemonicParsing="false" style="-fx-background-color: #32373B; -fx-background-radius: 5EM; -fx-border-color: BLACK; -fx-border-radius: 5EM; -fx-border-width: .0.1;" stylesheets="@style.css" text="LESS">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Button>
-                  <Button fx:id="deleteBTN" layoutX="105.0" layoutY="81.0" mnemonicParsing="false" style="-fx-background-color: white; -fx-background-radius: 5EM; -fx-border-color: BLACK; -fx-border-radius: 5EM; -fx-border-width: .0.1;" text="DELETE">
+                  <Button fx:id="deleteBTN" layoutX="105.0" layoutY="81.0" mnemonicParsing="false" style="-fx-background-color: #32373B; -fx-background-radius: 5EM; -fx-border-color: BLACK; -fx-border-radius: 5EM; -fx-border-width: .0.1;" stylesheets="@style.css" text="DELETE">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>

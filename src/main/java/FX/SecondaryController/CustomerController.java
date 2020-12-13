@@ -4,6 +4,8 @@ import FX.mainFX.MainController;
 import H2Database.db_control.DBSource;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -19,7 +21,7 @@ import java.util.ResourceBundle;
 
 public class CustomerController implements Initializable {
 
-    String insertedID;
+    private static StringProperty insertedID = new SimpleStringProperty();
     @FXML
     private Button createButton;
     @FXML
@@ -70,7 +72,8 @@ public class CustomerController implements Initializable {
 
 
         try {
-            insertedID = dbSource.createCustomer(name, age, phone, email, address);
+            insertedID.setValue(dbSource.createCustomer(name, age, phone, email, address));
+            MainController.newCustomerIDProperty().bind(insertedID);
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
         }
@@ -95,7 +98,6 @@ public class CustomerController implements Initializable {
         String regex = "(?i)(^[a-z])((?![ .,'-]$)[a-z .,'-]){0,24}$"; //reference: https://stackoverflow.com/questions/46326822/java-regex-first-name-validation
         return email.matches(regex);
     }
-
 
     @FXML
     public void displayMessage(MouseEvent event) {
